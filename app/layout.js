@@ -1,3 +1,4 @@
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import Link from "next/link";
 
@@ -324,7 +325,9 @@ export default function RootLayout({ children }) {
             </div>
           </div>
         </footer>
-      </body>
-    </html>
+      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
+
+</body>
+</html>
   );
 }
