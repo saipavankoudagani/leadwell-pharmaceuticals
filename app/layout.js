@@ -11,7 +11,7 @@ export const metadata = {
   },
 
   description:
-    "Leadwell Pharmaceuticals is a Hyderabad-based pharmaceutical company offering quality healthcare products, tablets, capsules, nutraceuticals and specialty pharmaceutical formulations.",
+    "Leadwell Pharmaceuticals is a Hyderabad-based pharmaceutical company offering quality healthcare products, tablets, capsules, nutraceuticals, orthopedic formulations, and specialty pharmaceutical products across India.",
 
   applicationName: "Leadwell Pharmaceuticals",
 
@@ -97,10 +97,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="antialiased">
-
         {/* ================= NAVBAR ================= */}
-        <nav className="flex justify-between items-center py-4 px-[5%] bg-white shadow-md sticky top-0 z-50">
 
+        <nav className="sticky top-0 z-50 flex items-center justify-between bg-white px-[5%] py-4 shadow-md">
           <Link href="/" className="flex items-center gap-3">
             <img
               src="/logo.png"
@@ -109,18 +108,22 @@ export default function RootLayout({ children }) {
             />
 
             <div className="hidden md:block">
-              <h2 className="text-xl font-bold text-[#005a8d] uppercase">
+              <h2 className="text-xl font-bold uppercase text-[#005a8d]">
                 Leadwell
               </h2>
-              <p className="text-xs text-gray-500 -mt-1">
+
+              <p className="-mt-1 text-xs text-gray-500">
                 Pharmaceuticals
               </p>
             </div>
           </Link>
 
-          <ul className="flex gap-8 font-semibold text-gray-700">
+          <ul className="flex gap-4 text-sm font-semibold text-gray-700 sm:gap-6 md:gap-8 md:text-base">
             <li>
-              <Link href="/" className="hover:text-[#2ecc71] duration-300">
+              <Link
+                href="/"
+                className="transition duration-300 hover:text-[#2ecc71]"
+              >
                 Home
               </Link>
             </li>
@@ -128,7 +131,7 @@ export default function RootLayout({ children }) {
             <li>
               <Link
                 href="/products"
-                className="hover:text-[#2ecc71] duration-300"
+                className="transition duration-300 hover:text-[#2ecc71]"
               >
                 Products
               </Link>
@@ -137,7 +140,7 @@ export default function RootLayout({ children }) {
             <li>
               <Link
                 href="/about"
-                className="hover:text-[#2ecc71] duration-300"
+                className="transition duration-300 hover:text-[#2ecc71]"
               >
                 About Us
               </Link>
@@ -146,7 +149,7 @@ export default function RootLayout({ children }) {
             <li>
               <Link
                 href="/contact"
-                className="hover:text-[#2ecc71] duration-300"
+                className="transition duration-300 hover:text-[#2ecc71]"
               >
                 Contact Us
               </Link>
@@ -160,17 +163,16 @@ export default function RootLayout({ children }) {
 
         {/* ================= FOOTER ================= */}
 
-        <footer className="bg-[#003b5c] text-white mt-20">
-
-          <div className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-
+        <footer className="mt-20 bg-[#003b5c] text-white">
+          <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-14 md:grid-cols-2 lg:grid-cols-4">
             {/* Company */}
+
             <div>
-              <div className="flex items-center gap-3 mb-5">
+              <div className="mb-5 flex items-center gap-3">
                 <img
                   src="/logo.png"
-                  alt="Leadwell"
-                  className="h-14"
+                  alt="Leadwell Pharmaceuticals logo"
+                  className="h-14 w-auto"
                 />
 
                 <div>
@@ -184,25 +186,28 @@ export default function RootLayout({ children }) {
                 </div>
               </div>
 
-              <p className="text-gray-300 leading-7 text-sm">
+              <p className="text-sm leading-7 text-gray-300">
                 Leadwell Pharmaceuticals is dedicated to delivering
                 high-quality pharmaceutical products with a strong
-                commitment to innovation, safety, and patient care.
-                We strive to improve healthcare by providing reliable
-                and affordable medicines across India.
+                commitment to innovation, safety, and patient care. We
+                strive to improve healthcare by providing reliable and
+                affordable medicines across India.
               </p>
             </div>
 
             {/* Quick Links */}
+
             <div>
-              <h3 className="text-xl font-semibold mb-5 text-[#2ecc71]">
+              <h3 className="mb-5 text-xl font-semibold text-[#2ecc71]">
                 Quick Links
               </h3>
 
               <ul className="space-y-3 text-gray-300">
-
                 <li>
-                  <Link href="/" className="hover:text-white duration-300">
+                  <Link
+                    href="/"
+                    className="transition duration-300 hover:text-white"
+                  >
                     Home
                   </Link>
                 </li>
@@ -210,7 +215,7 @@ export default function RootLayout({ children }) {
                 <li>
                   <Link
                     href="/products"
-                    className="hover:text-white duration-300"
+                    className="transition duration-300 hover:text-white"
                   >
                     Products
                   </Link>
@@ -219,7 +224,7 @@ export default function RootLayout({ children }) {
                 <li>
                   <Link
                     href="/about"
-                    className="hover:text-white duration-300"
+                    className="transition duration-300 hover:text-white"
                   >
                     About Us
                   </Link>
@@ -228,97 +233,97 @@ export default function RootLayout({ children }) {
                 <li>
                   <Link
                     href="/contact"
-                    className="hover:text-white duration-300"
+                    className="transition duration-300 hover:text-white"
                   >
                     Contact Us
                   </Link>
                 </li>
-
               </ul>
             </div>
 
             {/* Contact */}
-            <div>
 
-              <h3 className="text-xl font-semibold mb-5 text-[#2ecc71]">
+            <div>
+              <h3 className="mb-5 text-xl font-semibold text-[#2ecc71]">
                 Contact Us
               </h3>
 
-              <div className="space-y-4 text-gray-300 text-sm">
+              <div className="space-y-4 text-sm text-gray-300">
+                <p>📍 Hyderabad, Telangana, India</p>
 
                 <p>
-                  📍 Hyderabad, Telangana, India
+                  📞{" "}
+                  <a
+                    href="tel:+919346652741"
+                    className="transition hover:text-white"
+                  >
+                    +91 9346652741
+                  </a>
                 </p>
 
                 <p>
-                  📞 +91 9346652741
+                  ✉{" "}
+                  <a
+                    href="mailto:lwppharma@gmail.com"
+                    className="transition hover:text-white"
+                  >
+                    lwppharma@gmail.com
+                  </a>
                 </p>
 
                 <p>
-                  ✉ lwppharma@gmail.com
+                  🌐{" "}
+                  <a
+                    href="https://leadwellpharmaceuticals.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="break-all transition hover:text-white"
+                  >
+                    leadwellpharmaceuticals.com
+                  </a>
                 </p>
-
-                <p>
-                  🌐 www.leadwellpharmaceuticals.com
-                </p>
-
               </div>
-
             </div>
 
             {/* Business Hours */}
-            <div>
 
-              <h3 className="text-xl font-semibold mb-5 text-[#2ecc71]">
+            <div>
+              <h3 className="mb-5 text-xl font-semibold text-[#2ecc71]">
                 Business Hours
               </h3>
 
-              <div className="space-y-3 text-gray-300 text-sm">
-
+              <div className="space-y-3 text-sm text-gray-300">
                 <p>Monday - Saturday</p>
-
                 <p>09:00 AM - 07:00 PM</p>
-
                 <p>Sunday - Closed</p>
 
                 <div className="pt-5">
-
-                  <span className="bg-[#2ecc71] px-4 py-2 rounded-full font-semibold text-white text-xs">
+                  <span className="rounded-full bg-[#2ecc71] px-4 py-2 text-xs font-semibold text-white">
                     Trusted Healthcare Partner
                   </span>
-
                 </div>
-
               </div>
-
             </div>
-
           </div>
 
           {/* Bottom Footer */}
 
           <div className="border-t border-white/10">
-
-            <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row justify-between items-center text-sm text-gray-300">
-
-              <p>
+            <div className="mx-auto flex max-w-7xl flex-col items-center justify-between px-6 py-5 text-sm text-gray-300 md:flex-row">
+              <p className="text-center md:text-left">
                 © {new Date().getFullYear()} Leadwell Pharmaceuticals.
                 All Rights Reserved.
               </p>
 
               <p className="mt-3 md:mt-0">
-                Designed & Developed by{" "}
+                Designed &amp; Developed by{" "}
                 <span className="font-semibold text-[#2ecc71]">
                   Vegaahi
                 </span>
               </p>
-
             </div>
-
           </div>
-
         </footer>
-
       </body>
     </html>
   );
