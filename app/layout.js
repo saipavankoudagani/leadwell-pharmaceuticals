@@ -2,8 +2,95 @@ import "./globals.css";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Leadwell Pharmaceuticals",
-  description: "Leadwell Pharmaceuticals - Quality Medicines for Better Health",
+  metadataBase: new URL("https://leadwellpharmaceuticals.com"),
+
+  title: {
+    default:
+      "Leadwell Pharmaceuticals | Quality Pharmaceutical Products in India",
+    template: "%s | Leadwell Pharmaceuticals",
+  },
+
+  description:
+    "Leadwell Pharmaceuticals is a Hyderabad-based pharmaceutical company offering quality healthcare products, tablets, capsules, nutraceuticals and specialty pharmaceutical formulations.",
+
+  applicationName: "Leadwell Pharmaceuticals",
+
+  authors: [
+    {
+      name: "Leadwell Pharmaceuticals",
+      url: "https://leadwellpharmaceuticals.com",
+    },
+  ],
+
+  creator: "Leadwell Pharmaceuticals",
+  publisher: "Leadwell Pharmaceuticals",
+
+  keywords: [
+    "Leadwell Pharmaceuticals",
+    "Leadwell Pharma",
+    "pharmaceutical company in Hyderabad",
+    "pharmaceutical company in India",
+    "pharmaceutical products",
+    "healthcare products",
+    "orthopedic medicines",
+    "nutraceutical products",
+    "tablets and capsules",
+    "hospital pharmaceutical supplies",
+  ],
+
+  category: "Healthcare",
+
+  alternates: {
+    canonical: "/",
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://leadwellpharmaceuticals.com",
+    siteName: "Leadwell Pharmaceuticals",
+    title:
+      "Leadwell Pharmaceuticals | Quality Pharmaceutical Products in India",
+    description:
+      "Explore quality pharmaceutical and healthcare products from Leadwell Pharmaceuticals, Hyderabad.",
+    images: [
+      {
+        url: "/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Leadwell Pharmaceuticals",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title:
+      "Leadwell Pharmaceuticals | Quality Pharmaceutical Products in India",
+    description:
+      "Explore quality pharmaceutical and healthcare products from Leadwell Pharmaceuticals, Hyderabad.",
+    images: ["/logo.png"],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/logo.png",
+  },
+
+  verification: {},
 };
 
 export default function RootLayout({ children }) {
@@ -168,7 +255,7 @@ export default function RootLayout({ children }) {
                 </p>
 
                 <p>
-                  ✉ ilwppharma@gmail.com
+                  ✉ lwppharma@gmail.com
                 </p>
 
                 <p>
