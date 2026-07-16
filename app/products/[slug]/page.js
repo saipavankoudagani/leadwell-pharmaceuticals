@@ -3,9 +3,14 @@ import { notFound } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
+  CheckCircle2,
   ChevronRight,
   Info,
+  Package,
   ShieldCheck,
+  Sparkles,
+  Stethoscope,
+  Warehouse,
 } from "lucide-react";
 
 import ProductGallery from "@/components/ProductGallery";
@@ -17,23 +22,8 @@ import {
 const BASE_URL = "https://leadwellpharmaceuticals.com";
 const DEFAULT_IMAGE = "/logo.png";
 
-/*
- * Only product slugs returned by generateStaticParams are valid.
- *
- * If a URL contains an unknown product slug, Next.js will show
- * the not-found page rather than attempting to generate it.
- */
 export const dynamicParams = false;
 
-/*
- * Convert a local public image path into a full absolute URL.
- *
- * Example:
- * /products/cpwalk-main.png
- *
- * becomes:
- * https://leadwellpharmaceuticals.com/products/cpwalk-main.png
- */
 function getAbsoluteImageUrl(imagePath) {
   if (!imagePath) {
     return `${BASE_URL}${DEFAULT_IMAGE}`;
@@ -46,21 +36,11 @@ function getAbsoluteImageUrl(imagePath) {
     return imagePath;
   }
 
-  const normalizedPath = imagePath.startsWith("/")
-    ? imagePath
-    : `/${imagePath}`;
-
-  return `${BASE_URL}${normalizedPath}`;
+  return `${BASE_URL}${
+    imagePath.startsWith("/") ? imagePath : `/${imagePath}`
+  }`;
 }
 
-/*
- * Return all available product images.
- *
- * Priority:
- * 1. Gallery images
- * 2. Main image
- * 3. Website logo
- */
 function getProductImages(product) {
   const galleryImages = Array.isArray(product?.gallery)
     ? product.gallery.filter(
@@ -80,32 +60,28 @@ function getProductImages(product) {
   return [DEFAULT_IMAGE];
 }
 
-/*
- * Keep metadata descriptions within a practical search-result length.
- */
 function createMetaDescription(product) {
-  const compositionText = product.composition
-    ? ` Composition: ${product.composition}.`
-    : "";
+  if (product.seoDescription) {
+    return product.seoDescription;
+  }
 
-  const fullDescription =
-    `${product.name} by Leadwell Pharmaceuticals. ` +
-    `${product.description || ""}${compositionText}`;
-
-  const normalizedDescription = fullDescription
+  const text = [
+    `${product.name} by Leadwell Pharmaceuticals.`,
+    product.description,
+    product.composition
+      ? `Composition: ${product.composition}`
+      : "",
+  ]
+    .filter(Boolean)
+    .join(" ")
     .replace(/\s+/g, " ")
     .trim();
 
-  if (normalizedDescription.length <= 160) {
-    return normalizedDescription;
-  }
-
-  return `${normalizedDescription.slice(0, 157).trimEnd()}...`;
+  return text.length <= 160
+    ? text
+    : `${text.slice(0, 157).trimEnd()}...`;
 }
 
-/*
- * Safely serialize structured data before inserting it into HTML.
- */
 function serializeJsonLd(data) {
   return JSON.stringify(data)
     .replace(/</g, "\\u003c")
@@ -113,18 +89,12 @@ function serializeJsonLd(data) {
     .replace(/&/g, "\\u0026");
 }
 
-/*
- * Generate all known product pages during the production build.
- */
 export function generateStaticParams() {
   return products.map((product) => ({
     slug: product.slug,
   }));
 }
 
-/*
- * Generate unique metadata for every product page.
- */
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const product = getProductBySlug(slug);
@@ -148,7 +118,7 @@ export async function generateMetadata({ params }) {
   const description = createMetaDescription(product);
 
   return {
-    title: product.name,
+    title: product.seoTitle || product.name,
     description,
 
     alternates: {
@@ -160,7 +130,9 @@ export async function generateMetadata({ params }) {
       locale: "en_IN",
       url: productUrl,
       siteName: "Leadwell Pharmaceuticals",
-      title: `${product.name} | Leadwell Pharmaceuticals`,
+      title: `${
+        product.seoTitle || product.name
+      } | Leadwell Pharmaceuticals`,
       description,
       images: productImages.map((image, index) => ({
         url: image,
@@ -175,7 +147,9 @@ export async function generateMetadata({ params }) {
 
     twitter: {
       card: "summary_large_image",
-      title: `${product.name} | Leadwell Pharmaceuticals`,
+      title: `${
+        product.seoTitle || product.name
+      } | Leadwell Pharmaceuticals`,
       description,
       images: [productImages[0]],
     },
@@ -191,12 +165,6 @@ export async function generateMetadata({ params }) {
         "max-video-preview": -1,
       },
     },
-
-    other: {
-      manufacturer: "Leadwell Pharmaceuticals",
-      category:
-        product.category || "Pharmaceutical Product",
-    },
   };
 }
 
@@ -210,17 +178,10 @@ export default async function ProductPage({ params }) {
 
   const productUrl = `${BASE_URL}/products/${product.slug}`;
   const productGallery = getProductImages(product);
-
   const absoluteProductImages = productGallery.map(
     getAbsoluteImageUrl,
   );
 
-  /*
-   * Select up to three related products from the same category.
-   *
-   * These links help visitors discover related products and improve
-   * internal linking for search engines.
-   */
   const relatedProducts = products
     .filter(
       (item) =>
@@ -229,120 +190,75 @@ export default async function ProductPage({ params }) {
     )
     .slice(0, 3);
 
-  const additionalProperties = [];
-
-  if (product.composition) {
-    additionalProperties.push({
-      "@type": "PropertyValue",
-      name: "Composition",
-      value: product.composition,
-    });
-  }
-
-  if (product.indications) {
-    additionalProperties.push({
-      "@type": "PropertyValue",
-      name: "Product information",
-      value: product.indications,
-    });
-  }
-
-  /*
-   * Product structured data.
-   *
-   * Price, ratings, reviews and availability are intentionally excluded
-   * because they should only be included when genuine data exists.
-   */
-  const productSchema = {
-    "@type": "Product",
-    "@id": `${productUrl}#product`,
-    name: product.name,
-    url: productUrl,
-    description: product.description,
-    image: absoluteProductImages,
-    category:
-      product.category || "Pharmaceutical Product",
-
-    brand: {
-      "@type": "Brand",
-      name: "Leadwell Pharmaceuticals",
-    },
-
-    manufacturer: {
-      "@type": "Organization",
-      "@id": `${BASE_URL}/#organization`,
-      name: "Leadwell Pharmaceuticals",
-      url: BASE_URL,
-    },
-
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": productUrl,
-    },
-
-    ...(additionalProperties.length > 0 && {
-      additionalProperty: additionalProperties,
-    }),
-  };
-
-  /*
-   * Breadcrumb structured data:
-   *
-   * Home → Products → Current product
-   */
-  const breadcrumbSchema = {
-    "@type": "BreadcrumbList",
-    "@id": `${productUrl}#breadcrumb`,
-
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: BASE_URL,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Products",
-        item: `${BASE_URL}/products`,
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: product.name,
-        item: productUrl,
-      },
-    ],
-  };
-
-  const webPageSchema = {
-    "@type": "WebPage",
-    "@id": productUrl,
-    url: productUrl,
-    name: `${product.name} | Leadwell Pharmaceuticals`,
-    description: product.description,
-    breadcrumb: {
-      "@id": `${productUrl}#breadcrumb`,
-    },
-    mainEntity: {
-      "@id": `${productUrl}#product`,
-    },
-
-    isPartOf: {
-      "@type": "WebSite",
-      "@id": `${BASE_URL}/#website`,
-      name: "Leadwell Pharmaceuticals",
-      url: BASE_URL,
-    },
-  };
-
   const structuredData = {
     "@context": "https://schema.org",
     "@graph": [
-      webPageSchema,
-      productSchema,
-      breadcrumbSchema,
+      {
+        "@type": "WebPage",
+        "@id": productUrl,
+        url: productUrl,
+        name: `${product.name} | Leadwell Pharmaceuticals`,
+        description: product.description,
+        breadcrumb: {
+          "@id": `${productUrl}#breadcrumb`,
+        },
+        isPartOf: {
+          "@id": `${BASE_URL}/#website`,
+        },
+      },
+      {
+        "@type": "Product",
+        "@id": `${productUrl}#product`,
+        name: product.name,
+        url: productUrl,
+        description: product.description,
+        image: absoluteProductImages,
+        category:
+          product.category || "Pharmaceutical Product",
+        brand: {
+          "@type": "Brand",
+          name: "Leadwell Pharmaceuticals",
+        },
+        manufacturer: {
+          "@type": "Organization",
+          "@id": `${BASE_URL}/#organization`,
+          name: "Leadwell Pharmaceuticals",
+          url: BASE_URL,
+        },
+        ...(product.composition && {
+          additionalProperty: [
+            {
+              "@type": "PropertyValue",
+              name: "Composition",
+              value: product.composition,
+            },
+          ],
+        }),
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${productUrl}#breadcrumb`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: BASE_URL,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Products",
+            item: `${BASE_URL}/products`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: product.name,
+            item: productUrl,
+          },
+        ],
+      },
     ],
   };
 
@@ -356,9 +272,7 @@ export default async function ProductPage({ params }) {
       />
 
       <main className="min-h-screen bg-slate-50 px-[5%] py-12">
-        <div className="mx-auto max-w-6xl">
-          {/* Visible breadcrumb navigation */}
-
+        <div className="mx-auto max-w-7xl">
           <nav
             aria-label="Breadcrumb"
             className="mb-8 flex flex-wrap items-center gap-2 text-sm"
@@ -397,104 +311,64 @@ export default async function ProductPage({ params }) {
             </span>
           </nav>
 
-          {/* Back link */}
-
           <Link
             href="/products"
             className="mb-8 inline-flex items-center font-bold text-[#005a8d] transition hover:text-[#2ecc71]"
           >
-            <ArrowLeft
-              size={18}
-              aria-hidden="true"
-              className="mr-2"
-            />
-
+            <ArrowLeft size={18} className="mr-2" />
             Back to All Products
           </Link>
 
-          <div className="grid gap-12 lg:grid-cols-12">
-            {/* Product gallery */}
-
-            <section
-              aria-label={`${product.name} image gallery`}
-              className="lg:col-span-5"
-            >
+          <section className="grid gap-12 lg:grid-cols-12">
+            <div className="lg:col-span-5">
               <ProductGallery
                 images={productGallery}
                 productName={product.name}
               />
-            </section>
-
-            {/* Product information */}
+            </div>
 
             <article className="rounded-[40px] border border-slate-100 bg-white p-8 shadow-sm md:p-14 lg:col-span-7">
-              <header>
-                {product.category && (
-                  <span className="inline-flex rounded-full bg-[#2ecc71]/10 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-[#218c50]">
-                    {product.category}
-                  </span>
-                )}
+              {product.category && (
+                <span className="inline-flex rounded-full bg-[#2ecc71]/10 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-[#218c50]">
+                  {product.category}
+                </span>
+              )}
 
-                <h1 className="mb-4 mt-6 text-4xl font-extrabold text-[#005a8d] md:text-5xl">
-                  {product.name}
-                </h1>
+              <h1 className="mb-4 mt-6 text-4xl font-extrabold text-[#005a8d] md:text-5xl">
+                {product.name}
+              </h1>
 
-                <p className="mb-3 text-sm font-semibold text-slate-400">
-                  Marketed by Leadwell Pharmaceuticals
+              {product.tagline && (
+                <p className="mb-4 text-xl font-semibold leading-relaxed text-slate-700">
+                  {product.tagline}
                 </p>
+              )}
 
-                {product.description && (
-                  <p className="mb-8 text-lg leading-relaxed text-slate-600">
-                    {product.description}
-                  </p>
-                )}
-              </header>
+              <p className="mb-3 text-sm font-semibold text-slate-400">
+                Marketed by Leadwell Pharmaceuticals
+              </p>
 
-              <div className="space-y-6">
-                {/* Composition */}
+              {product.description && (
+                <p className="mb-8 text-lg leading-relaxed text-slate-600">
+                  {product.description}
+                </p>
+              )}
 
-                {product.composition && (
-                  <section className="rounded-3xl border border-blue-50 bg-[#f8fbff] p-8">
-                    <h2 className="mb-3 flex items-center text-lg font-bold text-[#005a8d]">
-                      <ShieldCheck
-                        size={24}
-                        aria-hidden="true"
-                        className="mr-3 text-[#2ecc71]"
-                      />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <QuickInfo
+                  Icon={Package}
+                  label="Dosage Form"
+                  value={product.dosageForm || "Product formulation"}
+                />
 
-                      Composition
-                    </h2>
-
-                    <p className="font-medium leading-relaxed text-slate-700">
-                      {product.composition}
-                    </p>
-                  </section>
-                )}
-
-                {/* Product information */}
-
-                {product.indications && (
-                  <section className="rounded-3xl border border-slate-100 p-8">
-                    <h2 className="mb-3 flex items-center text-lg font-bold text-[#005a8d]">
-                      <Info
-                        size={24}
-                        aria-hidden="true"
-                        className="mr-3 text-[#2ecc71]"
-                      />
-
-                      Product Information
-                    </h2>
-
-                    <p className="leading-relaxed text-slate-600">
-                      {product.indications}
-                    </p>
-                  </section>
-                )}
+                <QuickInfo
+                  Icon={Stethoscope}
+                  label="Category"
+                  value={product.category || "Healthcare"}
+                />
               </div>
 
-              {/* Enquiry button */}
-
-              <div className="pt-10">
+              <div className="pt-8">
                 <Link
                   href={`/contact?product=${encodeURIComponent(
                     product.name,
@@ -504,35 +378,179 @@ export default async function ProductPage({ params }) {
                   Enquire About This Product
                 </Link>
               </div>
-
-              {/* Medical disclaimer */}
-
-              <p className="mt-6 text-center text-xs leading-relaxed text-slate-400">
-                Product information is intended for healthcare
-                professionals and general informational purposes only.
-                Use prescription products only under the guidance of a
-                registered medical practitioner.
-              </p>
             </article>
-          </div>
+          </section>
 
-          {/* Related products */}
+          {product.overview && (
+            <section className="mt-16 rounded-[40px] border border-slate-100 bg-white p-8 shadow-sm md:p-12">
+              <SectionHeading
+                Icon={Info}
+                eyebrow="Product Overview"
+                title={`About ${product.name}`}
+              />
+
+              <p className="max-w-4xl text-lg leading-8 text-slate-600">
+                {product.overview}
+              </p>
+            </section>
+          )}
+
+          {Array.isArray(product.compositionDetails) &&
+            product.compositionDetails.length > 0 && (
+              <section className="mt-16">
+                <SectionHeading
+                  Icon={ShieldCheck}
+                  eyebrow="Formula"
+                  title="Composition"
+                />
+
+                <div className="overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-sm">
+                  <div className="grid grid-cols-2 bg-[#005a8d] px-6 py-4 font-bold text-white">
+                    <span>Ingredient</span>
+                    <span className="text-right">Quantity</span>
+                  </div>
+
+                  {product.compositionDetails.map((item) => (
+                    <div
+                      key={`${item.ingredient}-${item.quantity}`}
+                      className="grid grid-cols-2 border-t border-slate-100 px-6 py-5"
+                    >
+                      <span className="font-semibold text-slate-700">
+                        {item.ingredient}
+                      </span>
+
+                      <span className="text-right font-bold text-[#005a8d]">
+                        {item.quantity}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+          {!product.compositionDetails &&
+            product.composition && (
+              <section className="mt-16 rounded-[32px] border border-blue-50 bg-white p-8 shadow-sm">
+                <SectionHeading
+                  Icon={ShieldCheck}
+                  eyebrow="Formula"
+                  title="Composition"
+                />
+
+                <p className="leading-8 text-slate-700">
+                  {product.composition}
+                </p>
+              </section>
+            )}
+
+          {Array.isArray(product.keyIngredients) &&
+            product.keyIngredients.length > 0 && (
+              <section className="mt-16">
+                <SectionHeading
+                  Icon={Sparkles}
+                  eyebrow="Ingredient Profile"
+                  title="Key Ingredients"
+                />
+
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {product.keyIngredients.map((item) => (
+                    <article
+                      key={item.title}
+                      className="rounded-[28px] border border-slate-100 bg-white p-7 shadow-sm"
+                    >
+                      <h3 className="mb-3 text-xl font-extrabold text-[#005a8d]">
+                        {item.title}
+                      </h3>
+
+                      <p className="leading-7 text-slate-600">
+                        {item.description}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            )}
+
+          {Array.isArray(product.highlights) &&
+            product.highlights.length > 0 && (
+              <section className="mt-16 rounded-[40px] bg-[#005a8d] p-8 text-white md:p-12">
+                <SectionHeading
+                  Icon={CheckCircle2}
+                  eyebrow="Product Highlights"
+                  title="Why This Formulation"
+                  dark
+                />
+
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {product.highlights.map((highlight) => (
+                    <div
+                      key={highlight}
+                      className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/10 p-4"
+                    >
+                      <CheckCircle2
+                        size={20}
+                        className="mt-0.5 flex-shrink-0 text-[#2ecc71]"
+                      />
+
+                      <p className="text-sm leading-relaxed text-blue-50">
+                        {highlight}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+          <section className="mt-16 grid gap-8 lg:grid-cols-2">
+            {product.indications && (
+              <InfoPanel
+                Icon={Info}
+                title="Product Information"
+                text={product.indications}
+              />
+            )}
+
+            {product.usage && (
+              <InfoPanel
+                Icon={Stethoscope}
+                title="Directions for Use"
+                text={product.usage}
+              />
+            )}
+
+            {product.storage && (
+              <InfoPanel
+                Icon={Warehouse}
+                title="Storage"
+                text={product.storage}
+              />
+            )}
+
+            {product.packaging && (
+              <InfoPanel
+                Icon={Package}
+                title="Packaging"
+                text={product.packaging}
+              />
+            )}
+          </section>
+
+          <section className="mt-12 rounded-3xl border border-amber-100 bg-amber-50 p-6">
+            <p className="text-sm leading-7 text-amber-900">
+              {product.disclaimer ||
+                "Product information is intended for healthcare professionals and general informational purposes only. Use prescription products only under the guidance of a registered medical practitioner."}
+            </p>
+          </section>
 
           {relatedProducts.length > 0 && (
-            <section
-              aria-labelledby="related-products-heading"
-              className="mt-20"
-            >
+            <section className="mt-20">
               <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <p className="mb-2 text-sm font-bold uppercase tracking-widest text-[#2ecc71]">
                     Explore More
                   </p>
 
-                  <h2
-                    id="related-products-heading"
-                    className="text-3xl font-extrabold text-[#005a8d]"
-                  >
+                  <h2 className="text-3xl font-extrabold text-[#005a8d]">
                     Related Products
                   </h2>
                 </div>
@@ -542,12 +560,7 @@ export default async function ProductPage({ params }) {
                   className="inline-flex items-center font-bold text-[#005a8d] transition hover:text-[#2ecc71]"
                 >
                   View All Products
-
-                  <ArrowRight
-                    size={18}
-                    aria-hidden="true"
-                    className="ml-2"
-                  />
+                  <ArrowRight size={18} className="ml-2" />
                 </Link>
               </div>
 
@@ -577,15 +590,9 @@ export default async function ProductPage({ params }) {
                     <Link
                       href={`/products/${relatedProduct.slug}`}
                       className="inline-flex items-center font-bold text-[#005a8d] transition hover:text-[#2ecc71]"
-                      aria-label={`View details for ${relatedProduct.name}`}
                     >
                       View Product
-
-                      <ArrowRight
-                        size={16}
-                        aria-hidden="true"
-                        className="ml-2"
-                      />
+                      <ArrowRight size={16} className="ml-2" />
                     </Link>
                   </article>
                 ))}
@@ -595,5 +602,71 @@ export default async function ProductPage({ params }) {
         </div>
       </main>
     </>
+  );
+}
+
+function SectionHeading({
+  Icon,
+  eyebrow,
+  title,
+  dark = false,
+}) {
+  return (
+    <div className="mb-8">
+      <div className="mb-3 flex items-center gap-3">
+        <Icon
+          size={24}
+          className={
+            dark ? "text-[#2ecc71]" : "text-[#2ecc71]"
+          }
+        />
+
+        <p className="text-xs font-black uppercase tracking-[0.22em] text-[#2ecc71]">
+          {eyebrow}
+        </p>
+      </div>
+
+      <h2
+        className={`text-3xl font-extrabold ${
+          dark ? "text-white" : "text-[#005a8d]"
+        }`}
+      >
+        {title}
+      </h2>
+    </div>
+  );
+}
+
+function QuickInfo({ Icon, label, value }) {
+  return (
+    <div className="rounded-2xl border border-slate-100 bg-slate-50 p-5">
+      <Icon
+        size={22}
+        className="mb-3 text-[#2ecc71]"
+      />
+
+      <p className="mb-1 text-xs font-black uppercase tracking-wider text-slate-400">
+        {label}
+      </p>
+
+      <p className="font-bold text-[#005a8d]">{value}</p>
+    </div>
+  );
+}
+
+function InfoPanel({ Icon, title, text }) {
+  return (
+    <article className="rounded-[30px] border border-slate-100 bg-white p-8 shadow-sm">
+      <h2 className="mb-4 flex items-center text-xl font-bold text-[#005a8d]">
+        <Icon
+          size={24}
+          className="mr-3 text-[#2ecc71]"
+        />
+
+        {title}
+      </h2>
+
+      <p className="leading-8 text-slate-600">{text}</p>
+    </article>
   );
 }
