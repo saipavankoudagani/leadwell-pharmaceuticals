@@ -1,7 +1,61 @@
 import { GoogleAnalytics } from "@next/third-parties/google";
-import "./globals.css";
 import Link from "next/link";
-import { organizationSchema } from "./schema";
+import "./globals.css";
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://leadwellpharmaceuticals.com/#organization",
+
+  name: "Leadwell Pharmaceuticals",
+  legalName: "Leadwell Pharmaceuticals",
+
+  url: "https://leadwellpharmaceuticals.com",
+
+  logo: {
+    "@type": "ImageObject",
+    url: "https://leadwellpharmaceuticals.com/logo.png",
+  },
+
+  image: "https://leadwellpharmaceuticals.com/logo.png",
+
+  description:
+    "Leadwell Pharmaceuticals is a Hyderabad-based pharmaceutical company offering quality healthcare, nutraceutical, orthopaedic, and specialty pharmaceutical products across India.",
+
+  telephone: "+91-9346652741",
+  email: "lwppharma@gmail.com",
+
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Hyderabad",
+    addressRegion: "Telangana",
+    addressCountry: "IN",
+  },
+
+  areaServed: {
+    "@type": "Country",
+    name: "India",
+  },
+
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: "+91-9346652741",
+    email: "lwppharma@gmail.com",
+    contactType: "customer support",
+    areaServed: "IN",
+    availableLanguage: ["English", "Telugu", "Hindi"],
+  },
+
+  knowsAbout: [
+    "Pharmaceutical Products",
+    "Healthcare Products",
+    "Nutraceuticals",
+    "Orthopaedic Formulations",
+    "Tablets",
+    "Capsules",
+    "Specialty Pharmaceutical Products",
+  ],
+};
 
 export const metadata = {
   metadataBase: new URL("https://leadwellpharmaceuticals.com"),
@@ -47,39 +101,35 @@ export const metadata = {
   },
 
   openGraph: {
-  type: "website",
-  locale: "en_IN",
-  url: "https://leadwellpharmaceuticals.com",
-  siteName: "Leadwell Pharmaceuticals",
-  title:
-    "Leadwell Pharmaceuticals | Quality Pharmaceutical Products in India",
-  description:
-    "Explore quality pharmaceutical and healthcare products from Leadwell Pharmaceuticals, Hyderabad.",
-  images: [
-    {
-      url: "/og-image.png",
-      secureUrl:
-        "https://leadwellpharmaceuticals.com/og-image.png",
-      width: 1200,
-      height: 630,
-      alt:
-        "Leadwell Pharmaceuticals — Trusted Pharmaceutical Partner",
-      type: "image/png",
-    },
-  ],
-},
+    type: "website",
+    locale: "en_IN",
+    url: "https://leadwellpharmaceuticals.com",
+    siteName: "Leadwell Pharmaceuticals",
+    title:
+      "Leadwell Pharmaceuticals | Quality Pharmaceutical Products in India",
+    description:
+      "Explore quality pharmaceutical and healthcare products from Leadwell Pharmaceuticals, Hyderabad.",
+    images: [
+      {
+        url: "/logo.png",
+        alt: "Leadwell Pharmaceuticals logo",
+      },
+    ],
+  },
 
-twitter: {
-  card: "summary_large_image",
-  title:
-    "Leadwell Pharmaceuticals | Quality Pharmaceutical Products in India",
-  description:
-    "Explore quality pharmaceutical and healthcare products from Leadwell Pharmaceuticals, Hyderabad.",
-  images: ["/og-image.png"],
-},
+  twitter: {
+    card: "summary",
+    title:
+      "Leadwell Pharmaceuticals | Quality Pharmaceutical Products in India",
+    description:
+      "Explore quality pharmaceutical and healthcare products from Leadwell Pharmaceuticals, Hyderabad.",
+    images: ["/logo.png"],
+  },
+
   robots: {
     index: true,
     follow: true,
+
     googleBot: {
       index: true,
       follow: true,
@@ -90,30 +140,10 @@ twitter: {
   },
 
   icons: {
-  icon: [
-    {
-      url: "/favicon.ico",
-    },
-    {
-      url: "/favicon-16x16.png",
-      sizes: "16x16",
-      type: "image/png",
-    },
-    {
-      url: "/favicon-32x32.png",
-      sizes: "32x32",
-      type: "image/png",
-    },
-  ],
-  shortcut: "/favicon.ico",
-  apple: [
-    {
-      url: "/apple-touch-icon.png",
-      sizes: "180x180",
-      type: "image/png",
-    },
-  ],
-},
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 
   verification: {},
 };
@@ -122,6 +152,18 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="antialiased">
+        {/* Organization structured data */}
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationSchema).replace(
+              /</g,
+              "\\u003c",
+            ),
+          }}
+        />
+
         {/* ================= NAVBAR ================= */}
 
         <nav className="sticky top-0 z-50 flex items-center justify-between bg-white px-[5%] py-4 shadow-md">
@@ -349,15 +391,9 @@ export default function RootLayout({ children }) {
             </div>
           </div>
         </footer>
-        <script
-  type="application/ld+json"
-  dangerouslySetInnerHTML={{
-    __html: JSON.stringify(organizationSchema),
-  }}
-/>
-      <GoogleAnalytics gaId="G-MMJP02NJ42" />
 
-</body>
-</html>
+        <GoogleAnalytics gaId="G-MMJP02NJ42" />
+      </body>
+    </html>
   );
 }
