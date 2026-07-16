@@ -1,6 +1,7 @@
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import Link from "next/link";
+import { organizationSchema } from "./schema";
 
 export const metadata = {
   metadataBase: new URL("https://leadwellpharmaceuticals.com"),
@@ -46,33 +47,36 @@ export const metadata = {
   },
 
   openGraph: {
-    type: "website",
-    locale: "en_IN",
-    url: "https://leadwellpharmaceuticals.com",
-    siteName: "Leadwell Pharmaceuticals",
-    title:
-      "Leadwell Pharmaceuticals | Quality Pharmaceutical Products in India",
-    description:
-      "Explore quality pharmaceutical and healthcare products from Leadwell Pharmaceuticals, Hyderabad.",
-    images: [
-      {
-        url: "/logo.png",
-        width: 1200,
-        height: 630,
-        alt: "Leadwell Pharmaceuticals",
-      },
-    ],
-  },
+  type: "website",
+  locale: "en_IN",
+  url: "https://leadwellpharmaceuticals.com",
+  siteName: "Leadwell Pharmaceuticals",
+  title:
+    "Leadwell Pharmaceuticals | Quality Pharmaceutical Products in India",
+  description:
+    "Explore quality pharmaceutical and healthcare products from Leadwell Pharmaceuticals, Hyderabad.",
+  images: [
+    {
+      url: "/og-image.png",
+      secureUrl:
+        "https://leadwellpharmaceuticals.com/og-image.png",
+      width: 1200,
+      height: 630,
+      alt:
+        "Leadwell Pharmaceuticals — Trusted Pharmaceutical Partner",
+      type: "image/png",
+    },
+  ],
+},
 
-  twitter: {
-    card: "summary_large_image",
-    title:
-      "Leadwell Pharmaceuticals | Quality Pharmaceutical Products in India",
-    description:
-      "Explore quality pharmaceutical and healthcare products from Leadwell Pharmaceuticals, Hyderabad.",
-    images: ["/logo.png"],
-  },
-
+twitter: {
+  card: "summary_large_image",
+  title:
+    "Leadwell Pharmaceuticals | Quality Pharmaceutical Products in India",
+  description:
+    "Explore quality pharmaceutical and healthcare products from Leadwell Pharmaceuticals, Hyderabad.",
+  images: ["/og-image.png"],
+},
   robots: {
     index: true,
     follow: true,
@@ -86,10 +90,30 @@ export const metadata = {
   },
 
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/logo.png",
-  },
+  icon: [
+    {
+      url: "/favicon.ico",
+    },
+    {
+      url: "/favicon-16x16.png",
+      sizes: "16x16",
+      type: "image/png",
+    },
+    {
+      url: "/favicon-32x32.png",
+      sizes: "32x32",
+      type: "image/png",
+    },
+  ],
+  shortcut: "/favicon.ico",
+  apple: [
+    {
+      url: "/apple-touch-icon.png",
+      sizes: "180x180",
+      type: "image/png",
+    },
+  ],
+},
 
   verification: {},
 };
@@ -325,6 +349,12 @@ export default function RootLayout({ children }) {
             </div>
           </div>
         </footer>
+        <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify(organizationSchema),
+  }}
+/>
       <GoogleAnalytics gaId="G-MMJP02NJ42" />
 
 </body>
