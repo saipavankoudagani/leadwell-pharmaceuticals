@@ -1,164 +1,310 @@
-"use client";
-import { useState } from 'react';
-import { Mail, Phone, MapPin, Clock, CheckCircle2 } from 'lucide-react';
+import Link from "next/link";
+import {
+  ChevronRight,
+  Clock,
+  Mail,
+  MapPin,
+  MessageSquareText,
+  Phone,
+} from "lucide-react";
 
-export default function Contact() {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    hospitalName: '',
-    email: '',
-    details: ''
-  });
-  
-  const [status, setStatus] = useState('idle'); // 'idle', 'loading', 'success', 'error'
+import ContactForm from "@/components/ContactForm";
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+const BASE_URL = "https://leadwellpharmaceuticals.com";
+
+export const metadata = {
+  title: "Contact Us",
+
+  description:
+    "Contact Leadwell Pharmaceuticals in Hyderabad for product information, hospital supply requirements, distribution enquiries and pharmaceutical business partnerships.",
+
+  alternates: {
+    canonical: "/contact",
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: `${BASE_URL}/contact`,
+    siteName: "Leadwell Pharmaceuticals",
+    title: "Contact Leadwell Pharmaceuticals",
+    description:
+      "Contact our Hyderabad team for pharmaceutical product information, hospital supplies and distribution enquiries.",
+    images: [
+      {
+        url: "/pharma-3.png",
+        width: 1200,
+        height: 630,
+        alt: "Contact Leadwell Pharmaceuticals in Hyderabad",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact Leadwell Pharmaceuticals",
+    description:
+      "Contact our Hyderabad team for pharmaceutical product information and business enquiries.",
+    images: ["/pharma-3.png"],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
+function serializeJsonLd(data) {
+  return JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026");
+}
+
+export default async function ContactPage({ searchParams }) {
+  const query = await searchParams;
+
+  const requestedProduct =
+    typeof query?.product === "string"
+      ? query.product.trim().slice(0, 120)
+      : "";
+
+  const contactPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "@id": `${BASE_URL}/contact#webpage`,
+    url: `${BASE_URL}/contact`,
+    name: "Contact Leadwell Pharmaceuticals",
+    description:
+      "Contact Leadwell Pharmaceuticals for pharmaceutical product, hospital supply and distribution enquiries.",
+    isPartOf: {
+      "@id": `${BASE_URL}/#website`,
+    },
+    about: {
+      "@id": `${BASE_URL}/#organization`,
+    },
+    breadcrumb: {
+      "@id": `${BASE_URL}/contact#breadcrumb`,
+    },
+    mainEntity: {
+      "@id": `${BASE_URL}/#organization`,
+    },
+    inLanguage: "en-IN",
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setStatus('loading');
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": `${BASE_URL}/contact#breadcrumb`,
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: BASE_URL,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Contact Us",
+        item: `${BASE_URL}/contact`,
+      },
+    ],
+  };
 
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        setStatus('success');
-        setFormData({ fullName: '', hospitalName: '', email: '', details: '' }); // Clear form
-      } else {
-        setStatus('error');
-      }
-    } catch (error) {
-      setStatus('error');
-    }
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [contactPageSchema, breadcrumbSchema],
   };
 
   return (
-    <div className="bg-white min-h-screen">
-      <section className="bg-slate-50 py-20 px-[5%] text-center">
-        <h1 className="text-4xl font-bold text-[#005a8d] mb-4">Partner with Leadwell</h1>
-        <p className="text-gray-500 max-w-2xl mx-auto">
-          Inquire about bulk hospital supplies, distribution partnerships, or clinical product details. 
-          Our team in Hyderabad is ready to assist.
-        </p>
-      </section>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(structuredData),
+        }}
+      />
 
-      <div className="max-w-7xl mx-auto py-16 px-[5%] grid grid-cols-1 lg:grid-cols-2 gap-16">
-        
-        {/* Contact Info Cards */}
-        <div className="space-y-8">
-          <h2 className="text-3xl font-bold text-[#005a8d]">Get in Touch</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-6 bg-white border border-slate-100 rounded-2xl shadow-sm">
-              <Phone className="text-[#2ecc71] mb-4" size={24} />
-              <h4 className="font-bold text-[#005a8d]">Business Inquiry</h4>
-              <p className="text-gray-600 text-sm mt-1">+91 9346652741</p>
-            </div>
-            
-            <div className="p-6 bg-white border border-slate-100 rounded-2xl shadow-sm">
-              <Mail className="text-[#2ecc71] mb-4" size={24} />
-              <h4 className="font-bold text-[#005a8d]">Official Email</h4>
-              <p className="text-gray-600 text-sm mt-1">lwppharma@gmail.com</p>
-            </div>
+      <main className="min-h-screen bg-white">
+        {/* Hero */}
 
-            <div className="p-6 bg-white border border-slate-100 rounded-2xl shadow-sm">
-              <MapPin className="text-[#2ecc71] mb-4" size={24} />
-              <h4 className="font-bold text-[#005a8d]">Location</h4>
-              <p className="text-gray-600 text-sm mt-1">Hyderabad, Telangana, India</p>
+        <section className="relative overflow-hidden bg-[#f8fbff] px-[5%] py-20 text-center">
+          <div
+            aria-hidden="true"
+            className="absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[#2ecc71]/10 blur-3xl"
+          />
+
+          <div className="relative z-10 mx-auto max-w-4xl">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 shadow-sm">
+              <MessageSquareText
+                size={17}
+                aria-hidden="true"
+                className="text-[#2ecc71]"
+              />
+
+              <span className="text-xs font-black uppercase tracking-[0.22em] text-[#005a8d]">
+                Contact Leadwell
+              </span>
             </div>
 
-            <div className="p-6 bg-white border border-slate-100 rounded-2xl shadow-sm">
-              <Clock className="text-[#2ecc71] mb-4" size={24} />
-              <h4 className="font-bold text-[#005a8d]">Operations</h4>
-              <p className="text-gray-600 text-sm mt-1">Mon - Sat: 9:00 AM - 7:00 PM</p>
-            </div>
+            <h1 className="mb-6 text-4xl font-extrabold leading-tight text-[#005a8d] md:text-5xl lg:text-6xl">
+              Pharmaceutical product and business enquiries
+            </h1>
+
+            <p className="mx-auto max-w-3xl text-lg leading-relaxed text-slate-600">
+              Contact our Hyderabad team for product information,
+              hospital and institutional supply requirements,
+              distribution discussions or other pharmaceutical
+              business enquiries.
+            </p>
           </div>
+        </section>
+
+        <div className="mx-auto max-w-7xl px-[5%] pt-10">
+          <nav
+            aria-label="Breadcrumb"
+            className="flex items-center gap-2 text-sm"
+          >
+            <Link
+              href="/"
+              className="font-medium text-slate-500 transition hover:text-[#2ecc71]"
+            >
+              Home
+            </Link>
+
+            <ChevronRight
+              size={15}
+              aria-hidden="true"
+              className="text-slate-300"
+            />
+
+            <span
+              aria-current="page"
+              className="font-semibold text-[#005a8d]"
+            >
+              Contact Us
+            </span>
+          </nav>
         </div>
 
-        {/* Interactive Inquiry Form */}
-        <div className="bg-white border border-slate-200 p-10 rounded-[40px] shadow-xl shadow-slate-100">
-          <h3 className="text-2xl font-bold text-[#005a8d] mb-6">Send an Inquiry</h3>
-          
-          {status === 'success' ? (
-            <div className="flex flex-col items-center justify-center h-full text-center py-10">
-              <CheckCircle2 size={60} className="text-[#2ecc71] mb-4" />
-              <h4 className="text-2xl font-bold text-[#005a8d] mb-2">Inquiry Sent!</h4>
-              <p className="text-slate-500">Our team will get back to you shortly.</p>
-              <button onClick={() => setStatus('idle')} className="mt-6 text-[#005a8d] font-bold underline">Send another inquiry</button>
+        <section className="px-[5%] py-16">
+          <div className="mx-auto grid max-w-7xl grid-cols-1 gap-14 lg:grid-cols-2 lg:gap-16">
+            {/* Contact information */}
+
+            <div>
+              <p className="mb-3 text-sm font-black uppercase tracking-[0.22em] text-[#2ecc71]">
+                Get in Touch
+              </p>
+
+              <h2 className="mb-6 text-4xl font-extrabold text-[#005a8d]">
+                Connect with our Hyderabad team
+              </h2>
+
+              <p className="mb-10 max-w-xl leading-8 text-slate-600">
+                Our team is available to assist healthcare
+                professionals, hospitals, clinics and distribution
+                partners with product and supply-related enquiries.
+              </p>
+
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <ContactCard
+                  Icon={Phone}
+                  title="Business Enquiries"
+                >
+                  <a
+                    href="tel:+919346652741"
+                    className="font-medium text-slate-600 transition hover:text-[#005a8d]"
+                  >
+                    +91 9346652741
+                  </a>
+                </ContactCard>
+
+                <ContactCard Icon={Mail} title="Official Email">
+                  <a
+                    href="mailto:lwppharma@gmail.com"
+                    className="break-all font-medium text-slate-600 transition hover:text-[#005a8d]"
+                  >
+                    lwppharma@gmail.com
+                  </a>
+                </ContactCard>
+
+                <ContactCard Icon={MapPin} title="Location">
+                  <address className="not-italic leading-relaxed text-slate-600">
+                    Hyderabad, Telangana, India
+                  </address>
+                </ContactCard>
+
+                <ContactCard Icon={Clock} title="Business Hours">
+                  <p className="leading-relaxed text-slate-600">
+                    Monday – Saturday
+                    <br />
+                    9:00 AM – 7:00 PM
+                  </p>
+                </ContactCard>
+              </div>
+
+              <div className="mt-8 rounded-3xl border border-blue-100 bg-[#f8fbff] p-7">
+                <h3 className="mb-3 text-lg font-bold text-[#005a8d]">
+                  Before submitting an enquiry
+                </h3>
+
+                <p className="text-sm leading-7 text-slate-600">
+                  Please include the product name, required quantity,
+                  organisation name and your preferred contact details
+                  wherever applicable. This helps our team respond more
+                  effectively.
+                </p>
+              </div>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex flex-col">
-                  <label className="text-sm font-semibold text-gray-700 mb-2">Full Name</label>
-                  <input 
-                    type="text" 
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    required
-                    className="bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-[#2ecc71]" 
-                    placeholder="Enter Name" 
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label className="text-sm font-semibold text-gray-700 mb-2">Hospital/Clinic Name</label>
-                  <input 
-                    type="text" 
-                    name="hospitalName"
-                    value={formData.hospitalName}
-                    onChange={handleChange}
-                    className="bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-[#2ecc71]" 
-                    placeholder="Hospital Name" 
-                  />
-                </div>
-              </div>
 
-              <div className="flex flex-col">
-                <label className="text-sm font-semibold text-gray-700 mb-2">Email Address</label>
-                <input 
-                  type="email" 
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-[#2ecc71]" 
-                  placeholder="email@example.com" 
-                />
-              </div>
+            {/* Interactive form */}
 
-              <div className="flex flex-col">
-                <label className="text-sm font-semibold text-gray-700 mb-2">Inquiry Details</label>
-                <textarea 
-                  rows="4" 
-                  name="details"
-                  value={formData.details}
-                  onChange={handleChange}
-                  required
-                  className="bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-[#2ecc71]" 
-                  placeholder="What products are you interested in?"
-                ></textarea>
-              </div>
+            <ContactForm requestedProduct={requestedProduct} />
+          </div>
+        </section>
 
-              <button 
-                type="submit" 
-                disabled={status === 'loading'}
-                className="w-full bg-[#005a8d] text-white py-4 rounded-xl font-bold hover:bg-[#004066] transition shadow-lg shadow-blue-100 disabled:opacity-50"
-              >
-                {status === 'loading' ? 'Sending...' : 'Submit Inquiry'}
-              </button>
-              
-              {status === 'error' && <p className="text-red-500 text-sm text-center mt-2">Failed to send inquiry. Please try again.</p>}
-            </form>
-          )}
-        </div>
+        {/* Additional CTA */}
+
+        <section className="px-[5%] pb-16">
+          <div className="mx-auto max-w-7xl rounded-[40px] bg-[#005a8d] px-8 py-14 text-center text-white md:px-14">
+            <h2 className="mb-5 text-3xl font-extrabold md:text-4xl">
+              Looking for a specific pharmaceutical product?
+            </h2>
+
+            <p className="mx-auto mb-8 max-w-2xl leading-relaxed text-blue-100">
+              Browse our product portfolio to review available
+              categories, compositions and product information before
+              contacting our team.
+            </p>
+
+            <Link
+              href="/products"
+              className="inline-flex items-center gap-2 rounded-2xl bg-[#2ecc71] px-8 py-4 font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#27ae60] hover:shadow-xl"
+            >
+              Browse Our Products
+            </Link>
+          </div>
+        </section>
+      </main>
+    </>
+  );
+}
+
+function ContactCard({ Icon, title, children }) {
+  return (
+    <article className="rounded-3xl border border-slate-100 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+      <div className="mb-5 inline-flex rounded-2xl bg-[#2ecc71]/10 p-3">
+        <Icon
+          size={25}
+          aria-hidden="true"
+          className="text-[#2ecc71]"
+        />
       </div>
-    </div>
+
+      <h3 className="mb-2 font-bold text-[#005a8d]">{title}</h3>
+
+      <div className="text-sm">{children}</div>
+    </article>
   );
 }

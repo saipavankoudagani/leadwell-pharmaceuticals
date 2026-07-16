@@ -1,148 +1,632 @@
-import Link from 'next/link';
-import { ShieldCheck, Truck, Building2, ClipboardCheck, ArrowUpRight, Award, Activity, Zap, HeartPulse, User } from 'lucide-react';
+import Image from "next/image";
+import Link from "next/link";
+import {
+  Activity,
+  ArrowUpRight,
+  Award,
+  Building2,
+  ClipboardCheck,
+  HeartPulse,
+  ShieldCheck,
+  Truck,
+  UserRound,
+  Zap,
+} from "lucide-react";
+
+const BASE_URL = "https://leadwellpharmaceuticals.com";
+
+export const metadata = {
+  title: "Pharmaceutical Products and Healthcare Brands in Hyderabad",
+
+  description:
+    "Leadwell Pharmaceuticals is a Hyderabad-based pharmaceutical marketing company offering orthopaedic, neurological, nutraceutical and general healthcare products across India.",
+
+  alternates: {
+    canonical: "/",
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: BASE_URL,
+    siteName: "Leadwell Pharmaceuticals",
+    title:
+      "Leadwell Pharmaceuticals | Healthcare and Pharmaceutical Products",
+    description:
+      "Explore orthopaedic, neurological, nutraceutical and general healthcare products from Leadwell Pharmaceuticals, Hyderabad.",
+    images: [
+      {
+        url: "/pharma-1.png",
+        width: 1200,
+        height: 630,
+        alt: "Leadwell Pharmaceuticals healthcare products and services",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title:
+      "Leadwell Pharmaceuticals | Healthcare and Pharmaceutical Products",
+    description:
+      "Explore pharmaceutical and healthcare products from Leadwell Pharmaceuticals, Hyderabad.",
+    images: ["/pharma-1.png"],
+  },
+};
+
+const specialties = [
+  {
+    title: "Orthopaedics",
+    description:
+      "Nutritional and pharmaceutical formulations supporting bone, joint, tendon and mobility care.",
+    Icon: Activity,
+    featured: false,
+  },
+  {
+    title: "Neurology",
+    description:
+      "Prescription formulations developed for neurological and nerve-related healthcare requirements.",
+    Icon: Zap,
+    featured: true,
+  },
+  {
+    title: "Nutraceuticals",
+    description:
+      "Vitamin, mineral and antioxidant formulations supporting nutritional and metabolic wellbeing.",
+    Icon: HeartPulse,
+    featured: false,
+  },
+  {
+    title: "General Health",
+    description:
+      "A focused portfolio of pharmaceutical and wellness products for varied healthcare needs.",
+    Icon: UserRound,
+    featured: false,
+  },
+];
+
+const businessSteps = [
+  {
+    number: "01",
+    title: "Quality-focused manufacturing",
+    description:
+      "Our products are manufactured through selected pharmaceutical manufacturing partners according to applicable quality and regulatory requirements.",
+  },
+  {
+    number: "02",
+    title: "Healthcare professional engagement",
+    description:
+      "Our team shares accurate product information with healthcare professionals and supports responsible product awareness.",
+  },
+  {
+    number: "03",
+    title: "Reliable product distribution",
+    description:
+      "We work to maintain consistent product availability through hospital supply, direct coordination and authorised distribution channels.",
+  },
+];
+
+const homePageSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${BASE_URL}/#webpage`,
+  url: BASE_URL,
+  name: "Leadwell Pharmaceuticals",
+  description:
+    "Leadwell Pharmaceuticals is a Hyderabad-based pharmaceutical marketing company offering orthopaedic, neurological, nutraceutical and general healthcare products.",
+  isPartOf: {
+    "@id": `${BASE_URL}/#website`,
+  },
+  about: {
+    "@id": `${BASE_URL}/#organization`,
+  },
+  primaryImageOfPage: {
+    "@type": "ImageObject",
+    url: `${BASE_URL}/pharma-1.png`,
+  },
+  inLanguage: "en-IN",
+};
+
+function serializeJsonLd(data) {
+  return JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026");
+}
 
 export default function Home() {
   return (
-    <div className="bg-white selection:bg-[#2ecc71] selection:text-white">
-      {/* --- HERO: BRAND MARKETING FOCUS --- */}
-      <section className="relative min-h-[90vh] flex items-center justify-center px-[5%] overflow-hidden bg-[#f8fbff]">
-        {/* LARGE WATERMARK LOGO */}
-        <img src="/logo.png" className="absolute -right-20 top-20 w-[600px] opacity-[0.03] rotate-12 pointer-events-none" alt="" />
-        
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center relative z-10">
-          <div className="text-left">
-            <img src="/logo.png" alt="Leadwell Logo" className="w-24 mb-10 drop-shadow-sm" />
-            <div className="inline-flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-full mb-8 shadow-sm">
-              <span className="w-2 h-2 bg-[#2ecc71] rounded-full animate-pulse"></span>
-              <span className="text-xs font-bold text-[#005a8d] tracking-widest uppercase">Trusted Pharma Brand</span>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(homePageSchema),
+        }}
+      />
+
+      <main className="bg-white selection:bg-[#2ecc71] selection:text-white">
+        {/* ================= HERO ================= */}
+
+        <section className="relative flex min-h-[90vh] items-center overflow-hidden bg-[#f8fbff] px-[5%] py-20">
+          <Image
+            src="/logo.png"
+            alt=""
+            width={600}
+            height={600}
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-20 top-20 w-[600px] rotate-12 opacity-[0.03]"
+          />
+
+          <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-16 lg:grid-cols-2">
+            <div className="text-left">
+              <Image
+                src="/logo.png"
+                alt="Leadwell Pharmaceuticals logo"
+                width={120}
+                height={120}
+                priority
+                className="mb-10 h-auto w-24 drop-shadow-sm"
+              />
+
+              <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 shadow-sm">
+                <span
+                  aria-hidden="true"
+                  className="h-2 w-2 animate-pulse rounded-full bg-[#2ecc71]"
+                />
+
+                <span className="text-xs font-bold uppercase tracking-widest text-[#005a8d]">
+                  Trusted Pharmaceutical Brand
+                </span>
+              </div>
+
+              <h1 className="mb-8 text-5xl font-extrabold leading-[1.1] text-[#005a8d] sm:text-6xl md:text-7xl">
+                Advancing healthcare with{" "}
+                <span className="bg-gradient-to-r from-[#005a8d] to-[#2ecc71] bg-clip-text text-transparent">
+                  quality-focused formulations.
+                </span>
+              </h1>
+
+              <p className="mb-10 max-w-xl text-lg leading-relaxed text-slate-600">
+                Leadwell Pharmaceuticals is a Hyderabad-based
+                pharmaceutical marketing company offering orthopaedic,
+                neurological, nutraceutical and general healthcare
+                products. We support healthcare professionals,
+                institutions and distribution partners with reliable
+                product availability and responsive service.
+              </p>
+
+              <div className="flex flex-wrap gap-5">
+                <Link
+                  href="/products"
+                  className="group inline-flex items-center gap-2 rounded-2xl bg-[#005a8d] px-10 py-5 font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-[#00466e] hover:shadow-2xl hover:shadow-blue-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2ecc71] focus-visible:ring-offset-4"
+                >
+                  Explore Our Products
+
+                  <ArrowUpRight
+                    aria-hidden="true"
+                    className="transition-transform group-hover:-translate-y-1 group-hover:translate-x-1"
+                  />
+                </Link>
+
+                <Link
+                  href="/about"
+                  className="inline-flex items-center rounded-2xl border-2 border-[#005a8d] px-10 py-5 font-bold text-[#005a8d] transition hover:bg-[#005a8d] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#005a8d] focus-visible:ring-offset-4"
+                >
+                  About Leadwell
+                </Link>
+              </div>
             </div>
-            <h1 className="text-6xl md:text-7xl font-extrabold text-[#005a8d] leading-[1.1] mb-8">
-              Advancing Care with <br /> 
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#005a8d] to-[#2ecc71]">Proven Formulations.</span>
-            </h1>
-            <p className="text-lg text-slate-600 mb-10 max-w-lg leading-relaxed">
-              We are a premier pharmaceutical brand marketing company. We develop high-quality medicines, promote evidence-based therapies to doctors, and ensure seamless availability across hospitals.
+
+            <div className="group relative">
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 rounded-full bg-[#2ecc71]/10 opacity-0 blur-3xl transition-opacity group-hover:opacity-100"
+              />
+
+              <div className="relative z-10 rounded-[40px] border border-slate-100 bg-white p-4 shadow-2xl">
+                <div className="relative h-[440px] overflow-hidden rounded-[32px] sm:h-[550px]">
+                  <Image
+                    src="/pharma-1.png"
+                    alt="Pharmaceutical healthcare services by Leadwell Pharmaceuticals"
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 90vw, 600px"
+                    className="object-cover"
+                  />
+                </div>
+
+                <div className="absolute right-10 top-10 rounded-2xl border border-slate-100 bg-white p-3 shadow-lg">
+                  <Image
+                    src="/logo.png"
+                    alt="Leadwell Pharmaceuticals"
+                    width={112}
+                    height={40}
+                    className="h-8 w-auto object-contain"
+                  />
+                </div>
+              </div>
+
+              <div className="absolute -bottom-10 -left-6 z-20 hidden max-w-[300px] rounded-3xl border border-white/50 bg-white/90 p-8 shadow-xl backdrop-blur-md md:block">
+                <div className="mb-4 flex items-center gap-4">
+                  <div className="rounded-xl bg-[#2ecc71]/10 p-3">
+                    <Award
+                      aria-hidden="true"
+                      className="text-[#2ecc71]"
+                    />
+                  </div>
+
+                  <p className="font-bold text-[#005a8d]">
+                    Quality-focused portfolio
+                  </p>
+                </div>
+
+                <p className="text-xs leading-relaxed text-slate-500">
+                  Our growing product portfolio is developed to support
+                  the needs of healthcare professionals, hospitals and
+                  patients.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= TRUST STRIP ================= */}
+
+        <section
+          aria-label="Leadwell Pharmaceuticals commitments"
+          className="overflow-hidden border-y border-slate-100 bg-white py-10"
+        >
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-12 gap-y-6 px-[5%]">
+            <TrustItem
+              Icon={ShieldCheck}
+              text="Quality-focused products"
+            />
+
+            <TrustItem
+              Icon={ClipboardCheck}
+              text="Responsible product information"
+            />
+
+            <TrustItem
+              Icon={Truck}
+              text="Reliable supply coordination"
+            />
+          </div>
+        </section>
+
+        {/* ================= SPECIALTIES ================= */}
+
+        <section className="relative px-[5%] py-28 sm:py-32">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-16 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="mb-3 text-sm font-black uppercase tracking-[0.24em] text-[#2ecc71]">
+                  Our Product Portfolio
+                </p>
+
+                <h2 className="max-w-2xl text-4xl font-extrabold leading-tight text-[#005a8d] md:text-5xl">
+                  Focused healthcare categories
+                </h2>
+              </div>
+
+              <Link
+                href="/products"
+                className="inline-flex items-center gap-2 font-bold text-[#005a8d] transition hover:text-[#2ecc71]"
+              >
+                View all products
+                <ArrowUpRight size={18} aria-hidden="true" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+              {specialties.map((specialty) => (
+                <VerticalCard
+                  key={specialty.title}
+                  {...specialty}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ================= BUSINESS MODEL ================= */}
+
+        <section className="relative overflow-hidden bg-[#005a8d] px-[5%] py-24">
+          <Building2
+            size={400}
+            aria-hidden="true"
+            className="pointer-events-none absolute right-0 top-0 text-white opacity-[0.04]"
+          />
+
+          <div className="relative z-10 mx-auto max-w-7xl">
+            <div className="grid items-center gap-20 lg:grid-cols-2">
+              <div>
+                <p className="mb-4 text-sm font-black uppercase tracking-[0.24em] text-[#2ecc71]">
+                  How We Work
+                </p>
+
+                <h2 className="mb-10 text-4xl font-bold leading-tight text-white md:text-5xl">
+                  Our integrated{" "}
+                  <span className="text-[#2ecc71]">
+                    business approach
+                  </span>
+                </h2>
+
+                <div className="space-y-9">
+                  {businessSteps.map((step) => (
+                    <ProcessItem
+                      key={step.number}
+                      {...step}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="relative mt-12 h-64 overflow-hidden rounded-3xl">
+                  <Image
+                    src="/pharma-2.png"
+                    alt="Pharmaceutical manufacturing and quality processes"
+                    fill
+                    sizes="(max-width: 1024px) 45vw, 300px"
+                    className="object-cover"
+                  />
+                </div>
+
+                <div className="relative h-64 overflow-hidden rounded-3xl">
+                  <Image
+                    src="/pharma-3.png"
+                    alt="Healthcare professional product discussion"
+                    fill
+                    sizes="(max-width: 1024px) 45vw, 300px"
+                    className="object-cover"
+                  />
+                </div>
+
+                <div className="col-span-2 rounded-3xl border border-white/10 bg-white/10 p-8 backdrop-blur-sm">
+                  <div className="grid gap-6 sm:grid-cols-3">
+                    <ModelFeature
+                      Icon={ShieldCheck}
+                      title="Quality"
+                      text="Carefully selected product portfolio"
+                    />
+
+                    <ModelFeature
+                      Icon={Building2}
+                      title="Partnership"
+                      text="Manufacturing and distribution coordination"
+                    />
+
+                    <ModelFeature
+                      Icon={Truck}
+                      title="Availability"
+                      text="Responsive institutional supply support"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= ABOUT PREVIEW ================= */}
+
+        <section className="px-[5%] py-28">
+          <div className="mx-auto grid max-w-7xl items-center gap-14 rounded-[44px] border border-slate-100 bg-[#f8fbff] p-8 md:p-14 lg:grid-cols-2">
+            <div>
+              <p className="mb-3 text-sm font-black uppercase tracking-[0.24em] text-[#2ecc71]">
+                About Leadwell
+              </p>
+
+              <h2 className="mb-6 text-4xl font-extrabold leading-tight text-[#005a8d]">
+                Supporting better healthcare through dependable
+                pharmaceutical products
+              </h2>
+
+              <p className="mb-8 leading-8 text-slate-600">
+                Based in Hyderabad, Telangana, Leadwell
+                Pharmaceuticals focuses on pharmaceutical product
+                marketing, healthcare professional engagement and
+                reliable supply coordination. Our portfolio serves
+                multiple therapeutic and nutritional categories.
+              </p>
+
+              <Link
+                href="/about"
+                className="inline-flex items-center gap-2 font-bold text-[#005a8d] transition hover:text-[#2ecc71]"
+              >
+                Learn more about us
+                <ArrowUpRight size={18} aria-hidden="true" />
+              </Link>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-2">
+              <InfoCard
+                value="Hyderabad"
+                label="Headquartered in Telangana"
+              />
+
+              <InfoCard
+                value="Multiple"
+                label="Healthcare categories"
+              />
+
+              <InfoCard
+                value="India"
+                label="Market and service focus"
+              />
+
+              <InfoCard
+                value="Responsive"
+                label="Supply and enquiry support"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ================= CALL TO ACTION ================= */}
+
+        <section className="px-[5%] pb-20 pt-8 text-center">
+          <div className="mx-auto max-w-4xl rounded-[50px] border border-slate-100 bg-slate-50 px-8 py-16 sm:px-10">
+            <ClipboardCheck
+              aria-hidden="true"
+              className="mx-auto mb-6 text-[#2ecc71]"
+              size={50}
+            />
+
+            <h2 className="mb-6 text-4xl font-bold text-[#005a8d]">
+              Connect with Leadwell Pharmaceuticals
+            </h2>
+
+            <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-slate-500">
+              Contact our team for product information, healthcare
+              professional enquiries, hospital supply requirements or
+              distribution-related discussions.
             </p>
-            <div className="flex flex-wrap gap-5">
-              <Link href="/products" className="bg-[#005a8d] text-white px-10 py-5 rounded-2xl font-bold hover:shadow-2xl hover:shadow-blue-200 transition-all flex items-center gap-2 group">
-                Explore Our Brands <ArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link
+                href="/contact"
+                className="inline-block rounded-2xl bg-[#005a8d] px-12 py-5 font-bold text-white shadow-xl shadow-blue-100 transition-transform hover:scale-105 hover:bg-[#00466e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2ecc71] focus-visible:ring-offset-4"
+              >
+                Contact Leadwell
+              </Link>
+
+              <Link
+                href="/products"
+                className="inline-block rounded-2xl border-2 border-[#005a8d] px-12 py-5 font-bold text-[#005a8d] transition hover:bg-[#005a8d] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#005a8d] focus-visible:ring-offset-4"
+              >
+                Browse Products
               </Link>
             </div>
           </div>
-
-          <div className="relative group">
-            <div className="absolute inset-0 bg-[#2ecc71]/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div className="relative z-10 bg-white p-4 rounded-[40px] shadow-2xl border border-slate-100 italic">
-              <img src="/pharma-1.png" alt="Clinical Supply" className="rounded-[32px] w-full h-[550px] object-cover" />
-              {/* BRAND STAMP OVER IMAGE */}
-              <div className="absolute top-10 right-10 bg-white p-3 rounded-2xl shadow-lg border border-slate-100">
-                <img src="/logo.png" className="h-8 w-auto" alt="Leadwell" />
-              </div>
-            </div>
-            {/* Professional Floating Card */}
-            <div className="absolute -bottom-10 -left-10 bg-white/80 backdrop-blur-md p-8 rounded-3xl shadow-xl border border-white/50 z-20 hidden md:block max-w-[280px]">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="bg-[#2ecc71]/10 p-3 rounded-xl"><Award className="text-[#2ecc71]" /></div>
-                <h4 className="font-bold text-[#005a8d]">Doctor Recommended</h4>
-              </div>
-              <p className="text-xs text-slate-500 leading-relaxed">Our proprietary brands are trusted and prescribed by top specialists across Telangana.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* --- LOGO MARQUEE (TRUST STRIP) --- */}
-      <div className="bg-white py-10 border-y border-slate-50 flex items-center justify-center gap-20 overflow-hidden">
-        <div className="flex items-center gap-12 animate-infinite-scroll">
-           <img src="/logo.png" className="h-10 opacity-30 grayscale" alt="" />
-           <span className="text-slate-200 font-bold text-2xl uppercase tracking-[10px]">Quality Formulations</span>
-           <img src="/logo.png" className="h-10 opacity-30 grayscale" alt="" />
-           <span className="text-slate-200 font-bold text-2xl uppercase tracking-[10px]">Clinical Advocacy</span>
-           <img src="/logo.png" className="h-10 opacity-30 grayscale" alt="" />
-           <span className="text-slate-200 font-bold text-2xl uppercase tracking-[10px]">Hospital Availability</span>
-        </div>
-      </div>
-
-      {/* --- CORE VERTICALS: THE SPECIALIZED GRID --- */}
-      <section className="py-32 px-[5%] relative">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-4 mb-16">
-            <img src="/logo.png" className="h-12 w-auto" alt="Leadwell" />
-            <div className="h-px bg-slate-200 flex-grow"></div>
-            <h2 className="text-2xl font-bold text-[#005a8d] uppercase tracking-widest">Our Branded Verticals</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <VerticalCard icon={<Activity />} title="Orthopedics" desc="Premium bone density and joint recovery formulations." />
-            <VerticalCard icon={<Zap />} title="Neurology" desc="Targeted neuro-protective and cognitive treatments." active />
-            <VerticalCard icon={<HeartPulse />} title="Gynecology" desc="Comprehensive women's hormonal and wellness healthcare." />
-            <VerticalCard icon={<User />} title="General Health" desc="Highly prescribed daily broad-spectrum medicines." />
-          </div>
-        </div>
-      </section>
-
-      {/* --- THE LEADWELL MODEL: UNIQUE SECTION --- */}
-      <section className="py-24 px-[5%] bg-[#005a8d] overflow-hidden relative">
-        <div className="absolute top-0 right-0 p-20 opacity-10"><Building2 size={400} /></div>
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-20 items-center">
-            <div>
-              <h2 className="text-4xl font-bold text-white mb-8">Our Integrated <br /> <span className="text-[#2ecc71]">Business Model</span></h2>
-              <div className="space-y-8">
-                <ProcessItem num="01" title="Contract Manufacturing" text="We partner with elite, WHO-GMP certified facilities to produce our proprietary branded medicines." />
-                <ProcessItem num="02" title="Clinical Promotion" text="Our dedicated team engages with medical professionals, ensuring our formulations become the trusted prescription of choice." />
-                <ProcessItem num="03" title="Flexible Distribution" text="We ensure uninterrupted hospital supply through both direct delivery and authorized third-party distributor networks." />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <img src="/pharma-2.png" className="rounded-3xl h-64 w-full object-cover mt-12" alt="Manufacturing" />
-              <img src="/pharma-3.png" className="rounded-3xl h-64 w-full object-cover" alt="Doctor Consultation" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* --- FINAL CALL TO ACTION --- */}
-      <section className="py-32 text-center px-[5%]">
-        <div className="max-w-4xl mx-auto bg-slate-50 rounded-[50px] py-16 px-10 border border-slate-100">
-           <ClipboardCheck className="mx-auto text-[#2ecc71] mb-6" size={50} />
-           <h2 className="text-4xl font-bold text-[#005a8d] mb-6">Partner for Better Outcomes</h2>
-           <p className="text-slate-500 mb-10 text-lg">Whether you are a healthcare professional looking for reliable prescriptions, or a hospital requiring consistent supply.</p>
-           <Link href="/contact" className="bg-[#005a8d] text-white px-12 py-5 rounded-2xl font-bold shadow-xl shadow-blue-100 hover:scale-105 transition-transform inline-block">
-             Contact Leadwell
-           </Link>
-        </div>
-      </section>
-    </div>
+        </section>
+      </main>
+    </>
   );
 }
 
-// Sub-components for better organization
-function VerticalCard({ icon, title, desc, active = false }) {
-  // We use require('react') here to clone the element cleanly in Next.js Server Components
-  const React = require('react');
+function VerticalCard({
+  Icon,
+  title,
+  description,
+  featured = false,
+}) {
   return (
-    <div className={`p-10 rounded-[40px] transition-all duration-500 relative overflow-hidden group ${active ? 'bg-[#005a8d] text-white shadow-2xl scale-105' : 'bg-white border border-slate-100 hover:border-[#2ecc71]'}`}>
-      {/* TINY WATERMARK LOGO INSIDE CARD */}
-      <img src="/logo.png" className={`absolute -right-4 -bottom-4 h-16 opacity-5 ${active ? 'brightness-0 invert' : ''}`} alt="" />
-      
-      <div className={`mb-8 p-4 rounded-2xl inline-block transition-colors ${active ? 'bg-[#2ecc71]/20' : 'bg-slate-50 group-hover:bg-[#2ecc71]/10'}`}>
-        {React.cloneElement(icon, { size: 32, className: active ? 'text-[#2ecc71]' : 'text-[#005a8d]' })}
+    <article
+      className={`group relative overflow-hidden rounded-[40px] p-10 transition-all duration-500 ${
+        featured
+          ? "bg-[#005a8d] text-white shadow-2xl lg:-translate-y-3"
+          : "border border-slate-100 bg-white hover:-translate-y-2 hover:border-[#2ecc71] hover:shadow-xl"
+      }`}
+    >
+      <Image
+        src="/logo.png"
+        alt=""
+        width={100}
+        height={100}
+        aria-hidden="true"
+        className={`pointer-events-none absolute -bottom-4 -right-4 h-20 w-auto opacity-[0.04] ${
+          featured ? "brightness-0 invert" : ""
+        }`}
+      />
+
+      <div
+        className={`mb-8 inline-flex rounded-2xl p-4 transition-colors ${
+          featured
+            ? "bg-[#2ecc71]/20"
+            : "bg-slate-50 group-hover:bg-[#2ecc71]/10"
+        }`}
+      >
+        <Icon
+          size={32}
+          aria-hidden="true"
+          className={
+            featured ? "text-[#2ecc71]" : "text-[#005a8d]"
+          }
+        />
       </div>
-      <h4 className="text-xl font-bold mb-4">{title}</h4>
-      <p className={`text-sm leading-relaxed ${active ? 'text-blue-100' : 'text-slate-500'}`}>{desc}</p>
-    </div>
+
+      <h3 className="mb-4 text-xl font-bold">{title}</h3>
+
+      <p
+        className={`text-sm leading-relaxed ${
+          featured ? "text-blue-100" : "text-slate-500"
+        }`}
+      >
+        {description}
+      </p>
+    </article>
   );
 }
 
-function ProcessItem({ num, title, text }) {
+function ProcessItem({ number, title, description }) {
   return (
-    <div className="flex gap-6 items-start">
-      <div className="text-3xl font-black text-[#2ecc71]/30">{num}</div>
+    <article className="flex items-start gap-6">
+      <span
+        aria-hidden="true"
+        className="text-3xl font-black text-[#2ecc71]/40"
+      >
+        {number}
+      </span>
+
       <div>
-        <h4 className="text-white font-bold text-lg mb-1">{title}</h4>
-        <p className="text-blue-100/70 text-sm leading-relaxed">{text}</p>
+        <h3 className="mb-2 text-lg font-bold text-white">
+          {title}
+        </h3>
+
+        <p className="text-sm leading-relaxed text-blue-100/75">
+          {description}
+        </p>
       </div>
+    </article>
+  );
+}
+
+function TrustItem({ Icon, text }) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="rounded-xl bg-[#2ecc71]/10 p-3">
+        <Icon
+          size={22}
+          aria-hidden="true"
+          className="text-[#2ecc71]"
+        />
+      </div>
+
+      <p className="font-bold text-[#005a8d]">{text}</p>
+    </div>
+  );
+}
+
+function ModelFeature({ Icon, title, text }) {
+  return (
+    <div>
+      <Icon
+        aria-hidden="true"
+        className="mb-3 text-[#2ecc71]"
+        size={26}
+      />
+
+      <h3 className="mb-1 font-bold text-white">{title}</h3>
+
+      <p className="text-xs leading-relaxed text-blue-100/70">
+        {text}
+      </p>
+    </div>
+  );
+}
+
+function InfoCard({ value, label }) {
+  return (
+    <div className="rounded-3xl border border-slate-100 bg-white p-7 shadow-sm">
+      <p className="mb-2 text-2xl font-extrabold text-[#005a8d]">
+        {value}
+      </p>
+
+      <p className="text-sm leading-relaxed text-slate-500">
+        {label}
+      </p>
     </div>
   );
 }

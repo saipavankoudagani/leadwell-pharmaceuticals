@@ -1,39 +1,41 @@
-import { products } from "@/lib/products-data";
+import { products } from "@/lib/data/products";
 
-const baseUrl =
-  "https://leadwellpharmaceuticals.com";
+const BASE_URL = "https://leadwellpharmaceuticals.com";
 
+/**
+ * Next.js automatically generates:
+ * https://leadwellpharmaceuticals.com/sitemap.xml
+ *
+ * Do not use new Date() for every URL on every build unless the
+ * content was genuinely updated. A constantly changing lastModified
+ * date can give search engines inaccurate update information.
+ */
 export default function sitemap() {
   const staticPages = [
     {
-      url: baseUrl,
-      lastModified: new Date(),
+      url: BASE_URL,
       changeFrequency: "weekly",
       priority: 1,
     },
     {
-      url: `${baseUrl}/products`,
-      lastModified: new Date(),
+      url: `${BASE_URL}/products`,
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/about`,
-      lastModified: new Date(),
+      url: `${BASE_URL}/about`,
       changeFrequency: "monthly",
-      priority: 0.7,
+      priority: 0.8,
     },
     {
-      url: `${baseUrl}/contact`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
+      url: `${BASE_URL}/contact`,
+      changeFrequency: "yearly",
+      priority: 0.6,
     },
   ];
 
   const productPages = products.map((product) => ({
-    url: `${baseUrl}/products/${product.slug}`,
-    lastModified: new Date(),
+    url: `${BASE_URL}/products/${product.slug}`,
     changeFrequency: "monthly",
     priority: 0.8,
   }));

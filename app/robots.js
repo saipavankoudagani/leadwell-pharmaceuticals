@@ -1,14 +1,21 @@
+const BASE_URL = "https://leadwellpharmaceuticals.com";
+
 export default function robots() {
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-      disallow: ["/api/"],
-    },
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/",
 
-    sitemap:
-      "https://leadwellpharmaceuticals.com/sitemap.xml",
+        // Prevent indexing of API routes only.
+        disallow: [
+          "/api/",
+        ],
+      },
+    ],
 
-    host: "https://leadwellpharmaceuticals.com",
+    sitemap: `${BASE_URL}/sitemap.xml`,
+
+    host: BASE_URL,
   };
 }
