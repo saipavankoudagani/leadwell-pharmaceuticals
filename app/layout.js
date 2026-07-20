@@ -446,7 +446,7 @@ export default function RootLayout({ children }) {
                     href="mailto:lwppharma@gmail.com"
                     className="break-all transition hover:text-white"
                   >
-                    lwppharma@gmail.com
+                    lwppharma8@gmail.com
                   </a>
                 </p>
 
@@ -509,7 +509,7 @@ export default function RootLayout({ children }) {
               <p>
                 Designed &amp; Developed by{" "}
                 <span className="font-semibold text-[#2ecc71]">
-                  Vegaahi
+                  SP solutions
                 </span>
               </p>
             </div>
