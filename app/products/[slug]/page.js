@@ -19,11 +19,18 @@ import {
   products,
 } from "@/lib/data/products";
 
-const BASE_URL = "https://leadwellpharmaceuticals.com";
+const BASE_URL =
+  "https://leadwellpharmaceuticals.com";
+
 const DEFAULT_IMAGE = "/logo.png";
 
 export const dynamicParams = false;
 
+/*
+ * Convert a relative product image path
+ * into a full absolute URL for metadata
+ * and structured data.
+ */
 function getAbsoluteImageUrl(imagePath) {
   if (!imagePath) {
     return `${BASE_URL}${DEFAULT_IMAGE}`;
@@ -37,15 +44,24 @@ function getAbsoluteImageUrl(imagePath) {
   }
 
   return `${BASE_URL}${
-    imagePath.startsWith("/") ? imagePath : `/${imagePath}`
+    imagePath.startsWith("/")
+      ? imagePath
+      : `/${imagePath}`
   }`;
 }
 
+/*
+ * Get valid gallery images.
+ * Falls back to the main image or logo.
+ */
 function getProductImages(product) {
-  const galleryImages = Array.isArray(product?.gallery)
+  const galleryImages = Array.isArray(
+    product?.gallery,
+  )
     ? product.gallery.filter(
         (image) =>
-          typeof image === "string" && image.trim().length > 0,
+          typeof image === "string" &&
+          image.trim().length > 0,
       )
     : [];
 
@@ -60,6 +76,10 @@ function getProductImages(product) {
   return [DEFAULT_IMAGE];
 }
 
+/*
+ * Create a suitable SEO description
+ * when seoDescription is not available.
+ */
 function createMetaDescription(product) {
   if (product.seoDescription) {
     return product.seoDescription;
@@ -82,6 +102,9 @@ function createMetaDescription(product) {
     : `${text.slice(0, 157).trimEnd()}...`;
 }
 
+/*
+ * Safely serialize JSON-LD.
+ */
 function serializeJsonLd(data) {
   return JSON.stringify(data)
     .replace(/</g, "\\u003c")
@@ -89,21 +112,31 @@ function serializeJsonLd(data) {
     .replace(/&/g, "\\u0026");
 }
 
+/*
+ * Pre-generate every product page.
+ */
 export function generateStaticParams() {
   return products.map((product) => ({
     slug: product.slug,
   }));
 }
 
-export async function generateMetadata({ params }) {
+/*
+ * Dynamic SEO metadata for every product.
+ */
+export async function generateMetadata({
+  params,
+}) {
   const { slug } = await params;
   const product = getProductBySlug(slug);
 
   if (!product) {
     return {
       title: "Product Not Found",
+
       description:
         "The requested pharmaceutical product could not be found.",
+
       robots: {
         index: false,
         follow: false,
@@ -112,13 +145,17 @@ export async function generateMetadata({ params }) {
   }
 
   const productUrl = `${BASE_URL}/products/${product.slug}`;
-  const productImages = getProductImages(product).map(
-    getAbsoluteImageUrl,
-  );
-  const description = createMetaDescription(product);
+
+  const productImages = getProductImages(
+    product,
+  ).map(getAbsoluteImageUrl);
+
+  const description =
+    createMetaDescription(product);
 
   return {
     title: product.seoTitle || product.name,
+
     description,
 
     alternates: {
@@ -130,33 +167,45 @@ export async function generateMetadata({ params }) {
       locale: "en_IN",
       url: productUrl,
       siteName: "Leadwell Pharmaceuticals",
+
       title: `${
         product.seoTitle || product.name
       } | Leadwell Pharmaceuticals`,
+
       description,
-      images: productImages.map((image, index) => ({
-        url: image,
-        width: 1200,
-        height: 1200,
-        alt:
-          index === 0
-            ? `${product.name} pharmaceutical product`
-            : `${product.name} product view ${index + 1}`,
-      })),
+
+      images: productImages.map(
+        (image, index) => ({
+          url: image,
+          width: 1200,
+          height: 1200,
+
+          alt:
+            index === 0
+              ? `${product.name} pharmaceutical product`
+              : `${product.name} product view ${
+                  index + 1
+                }`,
+        }),
+      ),
     },
 
     twitter: {
       card: "summary_large_image",
+
       title: `${
         product.seoTitle || product.name
       } | Leadwell Pharmaceuticals`,
+
       description,
+
       images: [productImages[0]],
     },
 
     robots: {
       index: true,
       follow: true,
+
       googleBot: {
         index: true,
         follow: true,
@@ -168,7 +217,9 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function ProductPage({ params }) {
+export default async function ProductPage({
+  params,
+}) {
   const { slug } = await params;
   const product = getProductBySlug(slug);
 
@@ -177,10 +228,27 @@ export default async function ProductPage({ params }) {
   }
 
   const productUrl = `${BASE_URL}/products/${product.slug}`;
-  const productGallery = getProductImages(product);
-  const absoluteProductImages = productGallery.map(
-    getAbsoluteImageUrl,
-  );
+
+  const productGallery =
+    getProductImages(product);
+
+  const absoluteProductImages =
+    productGallery.map(getAbsoluteImageUrl);
+
+  const description =
+    createMetaDescription(product);
+
+  const hasCompositionDetails =
+    Array.isArray(product.compositionDetails) &&
+    product.compositionDetails.length > 0;
+
+  /*
+   * Supports the newer packInfo property,
+   * while retaining compatibility with any
+   * older product using packaging.
+   */
+  const packageInformation =
+    product.packInfo || product.packaging || "";
 
   const relatedProducts = products
     .filter(
@@ -190,54 +258,81 @@ export default async function ProductPage({ params }) {
     )
     .slice(0, 3);
 
+  /*
+   * Medical informational structured data.
+   *
+   * Product schema has intentionally not been
+   * used because these pages are not ecommerce
+   * pages and do not contain offers, prices,
+   * reviews or aggregate ratings.
+   */
   const structuredData = {
     "@context": "https://schema.org",
+
     "@graph": [
       {
-        "@type": "WebPage",
-        "@id": productUrl,
+        "@type": "MedicalWebPage",
+
+        "@id": `${productUrl}#webpage`,
+
         url: productUrl,
+
         name: `${product.name} | Leadwell Pharmaceuticals`,
-        description: product.description,
+
+        description,
+
+        image: absoluteProductImages,
+
+        inLanguage: "en-IN",
+
         breadcrumb: {
           "@id": `${productUrl}#breadcrumb`,
         },
+
         isPartOf: {
           "@id": `${BASE_URL}/#website`,
         },
-      },
-      {
-        "@type": "Product",
-        "@id": `${productUrl}#product`,
-        name: product.name,
-        url: productUrl,
-        description: product.description,
-        image: absoluteProductImages,
-        category:
-          product.category || "Pharmaceutical Product",
-        brand: {
-          "@type": "Brand",
-          name: "Leadwell Pharmaceuticals",
+
+        about: {
+          "@id": `${productUrl}#medical-entity`,
         },
-        manufacturer: {
-          "@type": "Organization",
+
+        mainEntity: {
+          "@id": `${productUrl}#medical-entity`,
+        },
+
+        publisher: {
           "@id": `${BASE_URL}/#organization`,
-          name: "Leadwell Pharmaceuticals",
-          url: BASE_URL,
         },
-        ...(product.composition && {
-          additionalProperty: [
-            {
-              "@type": "PropertyValue",
-              name: "Composition",
-              value: product.composition,
-            },
-          ],
-        }),
       },
+
+      {
+        "@type": "MedicalEntity",
+
+        "@id": `${productUrl}#medical-entity`,
+
+        name: product.name,
+
+        url: productUrl,
+
+        description,
+
+        image: absoluteProductImages,
+
+        mainEntityOfPage: {
+          "@id": `${productUrl}#webpage`,
+        },
+
+        subjectOf: {
+          "@id": `${productUrl}#webpage`,
+        },
+      },
+
       {
         "@type": "BreadcrumbList",
+
         "@id": `${productUrl}#breadcrumb`,
+
         itemListElement: [
           {
             "@type": "ListItem",
@@ -245,12 +340,14 @@ export default async function ProductPage({ params }) {
             name: "Home",
             item: BASE_URL,
           },
+
           {
             "@type": "ListItem",
             position: 2,
             name: "Products",
             item: `${BASE_URL}/products`,
           },
+
           {
             "@type": "ListItem",
             position: 3,
@@ -267,12 +364,15 @@ export default async function ProductPage({ params }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: serializeJsonLd(structuredData),
+          __html:
+            serializeJsonLd(structuredData),
         }}
       />
 
       <main className="min-h-screen bg-slate-50 px-[5%] py-12">
         <div className="mx-auto max-w-7xl">
+          {/* Breadcrumb */}
+
           <nav
             aria-label="Breadcrumb"
             className="mb-8 flex flex-wrap items-center gap-2 text-sm"
@@ -311,13 +411,22 @@ export default async function ProductPage({ params }) {
             </span>
           </nav>
 
+          {/* Back link */}
+
           <Link
             href="/products"
             className="mb-8 inline-flex items-center font-bold text-[#005a8d] transition hover:text-[#2ecc71]"
           >
-            <ArrowLeft size={18} className="mr-2" />
+            <ArrowLeft
+              size={18}
+              aria-hidden="true"
+              className="mr-2"
+            />
+
             Back to All Products
           </Link>
+
+          {/* Main product information */}
 
           <section className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-5">
@@ -345,7 +454,8 @@ export default async function ProductPage({ params }) {
               )}
 
               <p className="mb-3 text-sm font-semibold text-slate-400">
-                Marketed by Leadwell Pharmaceuticals
+                Marketed by Leadwell
+                Pharmaceuticals
               </p>
 
               {product.description && (
@@ -358,13 +468,19 @@ export default async function ProductPage({ params }) {
                 <QuickInfo
                   Icon={Package}
                   label="Dosage Form"
-                  value={product.dosageForm || "Product formulation"}
+                  value={
+                    product.dosageForm ||
+                    "Product formulation"
+                  }
                 />
 
                 <QuickInfo
                   Icon={Stethoscope}
                   label="Category"
-                  value={product.category || "Healthcare"}
+                  value={
+                    product.category ||
+                    "Healthcare"
+                  }
                 />
               </div>
 
@@ -381,6 +497,8 @@ export default async function ProductPage({ params }) {
             </article>
           </section>
 
+          {/* Product overview */}
+
           {product.overview && (
             <section className="mt-16 rounded-[40px] border border-slate-100 bg-white p-8 shadow-sm md:p-12">
               <SectionHeading
@@ -395,22 +513,27 @@ export default async function ProductPage({ params }) {
             </section>
           )}
 
-          {Array.isArray(product.compositionDetails) &&
-            product.compositionDetails.length > 0 && (
-              <section className="mt-16">
-                <SectionHeading
-                  Icon={ShieldCheck}
-                  eyebrow="Formula"
-                  title="Composition"
-                />
+          {/* Composition table */}
 
-                <div className="overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-sm">
-                  <div className="grid grid-cols-2 bg-[#005a8d] px-6 py-4 font-bold text-white">
-                    <span>Ingredient</span>
-                    <span className="text-right">Quantity</span>
-                  </div>
+          {hasCompositionDetails && (
+            <section className="mt-16">
+              <SectionHeading
+                Icon={ShieldCheck}
+                eyebrow="Formula"
+                title="Composition"
+              />
 
-                  {product.compositionDetails.map((item) => (
+              <div className="overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-sm">
+                <div className="grid grid-cols-2 bg-[#005a8d] px-6 py-4 font-bold text-white">
+                  <span>Ingredient</span>
+
+                  <span className="text-right">
+                    Quantity
+                  </span>
+                </div>
+
+                {product.compositionDetails.map(
+                  (item) => (
                     <div
                       key={`${item.ingredient}-${item.quantity}`}
                       className="grid grid-cols-2 border-t border-slate-100 px-6 py-5"
@@ -423,12 +546,15 @@ export default async function ProductPage({ params }) {
                         {item.quantity}
                       </span>
                     </div>
-                  ))}
-                </div>
-              </section>
-            )}
+                  ),
+                )}
+              </div>
+            </section>
+          )}
 
-          {!product.compositionDetails &&
+          {/* Plain composition text */}
+
+          {!hasCompositionDetails &&
             product.composition && (
               <section className="mt-16 rounded-[32px] border border-blue-50 bg-white p-8 shadow-sm">
                 <SectionHeading
@@ -443,7 +569,11 @@ export default async function ProductPage({ params }) {
               </section>
             )}
 
-          {Array.isArray(product.keyIngredients) &&
+          {/* Key ingredients */}
+
+          {Array.isArray(
+            product.keyIngredients,
+          ) &&
             product.keyIngredients.length > 0 && (
               <section className="mt-16">
                 <SectionHeading
@@ -453,23 +583,27 @@ export default async function ProductPage({ params }) {
                 />
 
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {product.keyIngredients.map((item) => (
-                    <article
-                      key={item.title}
-                      className="rounded-[28px] border border-slate-100 bg-white p-7 shadow-sm"
-                    >
-                      <h3 className="mb-3 text-xl font-extrabold text-[#005a8d]">
-                        {item.title}
-                      </h3>
+                  {product.keyIngredients.map(
+                    (item) => (
+                      <article
+                        key={item.title}
+                        className="rounded-[28px] border border-slate-100 bg-white p-7 shadow-sm"
+                      >
+                        <h3 className="mb-3 text-xl font-extrabold text-[#005a8d]">
+                          {item.title}
+                        </h3>
 
-                      <p className="leading-7 text-slate-600">
-                        {item.description}
-                      </p>
-                    </article>
-                  ))}
+                        <p className="leading-7 text-slate-600">
+                          {item.description}
+                        </p>
+                      </article>
+                    ),
+                  )}
                 </div>
               </section>
             )}
+
+          {/* Product highlights */}
 
           {Array.isArray(product.highlights) &&
             product.highlights.length > 0 && (
@@ -482,24 +616,29 @@ export default async function ProductPage({ params }) {
                 />
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {product.highlights.map((highlight) => (
-                    <div
-                      key={highlight}
-                      className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/10 p-4"
-                    >
-                      <CheckCircle2
-                        size={20}
-                        className="mt-0.5 flex-shrink-0 text-[#2ecc71]"
-                      />
+                  {product.highlights.map(
+                    (highlight) => (
+                      <div
+                        key={highlight}
+                        className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/10 p-4"
+                      >
+                        <CheckCircle2
+                          size={20}
+                          aria-hidden="true"
+                          className="mt-0.5 flex-shrink-0 text-[#2ecc71]"
+                        />
 
-                      <p className="text-sm leading-relaxed text-blue-50">
-                        {highlight}
-                      </p>
-                    </div>
-                  ))}
+                        <p className="text-sm leading-relaxed text-blue-50">
+                          {highlight}
+                        </p>
+                      </div>
+                    ),
+                  )}
                 </div>
               </section>
             )}
+
+          {/* Product information panels */}
 
           <section className="mt-16 grid gap-8 lg:grid-cols-2">
             {product.indications && (
@@ -526,14 +665,16 @@ export default async function ProductPage({ params }) {
               />
             )}
 
-            {product.packaging && (
+            {packageInformation && (
               <InfoPanel
                 Icon={Package}
                 title="Packaging"
-                text={product.packaging}
+                text={packageInformation}
               />
             )}
           </section>
+
+          {/* Disclaimer */}
 
           <section className="mt-12 rounded-3xl border border-amber-100 bg-amber-50 p-6">
             <p className="text-sm leading-7 text-amber-900">
@@ -541,6 +682,8 @@ export default async function ProductPage({ params }) {
                 "Product information is intended for healthcare professionals and general informational purposes only. Use prescription products only under the guidance of a registered medical practitioner."}
             </p>
           </section>
+
+          {/* Related products */}
 
           {relatedProducts.length > 0 && (
             <section className="mt-20">
@@ -560,42 +703,64 @@ export default async function ProductPage({ params }) {
                   className="inline-flex items-center font-bold text-[#005a8d] transition hover:text-[#2ecc71]"
                 >
                   View All Products
-                  <ArrowRight size={18} className="ml-2" />
+
+                  <ArrowRight
+                    size={18}
+                    aria-hidden="true"
+                    className="ml-2"
+                  />
                 </Link>
               </div>
 
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {relatedProducts.map((relatedProduct) => (
-                  <article
-                    key={relatedProduct.slug}
-                    className="rounded-3xl border border-slate-100 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-                  >
-                    <p className="mb-3 text-xs font-black uppercase tracking-widest text-[#2ecc71]">
-                      {relatedProduct.category}
-                    </p>
+                {relatedProducts.map(
+                  (relatedProduct) => (
+                    <article
+                      key={
+                        relatedProduct.slug
+                      }
+                      className="rounded-3xl border border-slate-100 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                    >
+                      <p className="mb-3 text-xs font-black uppercase tracking-widest text-[#2ecc71]">
+                        {
+                          relatedProduct.category
+                        }
+                      </p>
 
-                    <h3 className="mb-3 text-xl font-extrabold text-[#005a8d]">
+                      <h3 className="mb-3 text-xl font-extrabold text-[#005a8d]">
+                        <Link
+                          href={`/products/${relatedProduct.slug}`}
+                          className="transition hover:text-[#2ecc71]"
+                        >
+                          {
+                            relatedProduct.name
+                          }
+                        </Link>
+                      </h3>
+
+                      {relatedProduct.description && (
+                        <p className="mb-5 line-clamp-3 text-sm leading-relaxed text-slate-600">
+                          {
+                            relatedProduct.description
+                          }
+                        </p>
+                      )}
+
                       <Link
                         href={`/products/${relatedProduct.slug}`}
-                        className="transition hover:text-[#2ecc71]"
+                        className="inline-flex items-center font-bold text-[#005a8d] transition hover:text-[#2ecc71]"
                       >
-                        {relatedProduct.name}
+                        View Product
+
+                        <ArrowRight
+                          size={16}
+                          aria-hidden="true"
+                          className="ml-2"
+                        />
                       </Link>
-                    </h3>
-
-                    <p className="mb-5 line-clamp-3 text-sm leading-relaxed text-slate-600">
-                      {relatedProduct.description}
-                    </p>
-
-                    <Link
-                      href={`/products/${relatedProduct.slug}`}
-                      className="inline-flex items-center font-bold text-[#005a8d] transition hover:text-[#2ecc71]"
-                    >
-                      View Product
-                      <ArrowRight size={16} className="ml-2" />
-                    </Link>
-                  </article>
-                ))}
+                    </article>
+                  ),
+                )}
               </div>
             </section>
           )}
@@ -616,9 +781,8 @@ function SectionHeading({
       <div className="mb-3 flex items-center gap-3">
         <Icon
           size={24}
-          className={
-            dark ? "text-[#2ecc71]" : "text-[#2ecc71]"
-          }
+          aria-hidden="true"
+          className="text-[#2ecc71]"
         />
 
         <p className="text-xs font-black uppercase tracking-[0.22em] text-[#2ecc71]">
@@ -628,7 +792,9 @@ function SectionHeading({
 
       <h2
         className={`text-3xl font-extrabold ${
-          dark ? "text-white" : "text-[#005a8d]"
+          dark
+            ? "text-white"
+            : "text-[#005a8d]"
         }`}
       >
         {title}
@@ -637,11 +803,16 @@ function SectionHeading({
   );
 }
 
-function QuickInfo({ Icon, label, value }) {
+function QuickInfo({
+  Icon,
+  label,
+  value,
+}) {
   return (
     <div className="rounded-2xl border border-slate-100 bg-slate-50 p-5">
       <Icon
         size={22}
+        aria-hidden="true"
         className="mb-3 text-[#2ecc71]"
       />
 
@@ -649,24 +820,33 @@ function QuickInfo({ Icon, label, value }) {
         {label}
       </p>
 
-      <p className="font-bold text-[#005a8d]">{value}</p>
+      <p className="font-bold text-[#005a8d]">
+        {value}
+      </p>
     </div>
   );
 }
 
-function InfoPanel({ Icon, title, text }) {
+function InfoPanel({
+  Icon,
+  title,
+  text,
+}) {
   return (
     <article className="rounded-[30px] border border-slate-100 bg-white p-8 shadow-sm">
       <h2 className="mb-4 flex items-center text-xl font-bold text-[#005a8d]">
         <Icon
           size={24}
+          aria-hidden="true"
           className="mr-3 text-[#2ecc71]"
         />
 
         {title}
       </h2>
 
-      <p className="leading-8 text-slate-600">{text}</p>
+      <p className="leading-8 text-slate-600">
+        {text}
+      </p>
     </article>
   );
 }

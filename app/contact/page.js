@@ -10,13 +10,14 @@ import {
 
 import ContactForm from "@/components/ContactForm";
 
-const BASE_URL = "https://leadwellpharmaceuticals.com";
+const BASE_URL =
+  "https://leadwellpharmaceuticals.com";
 
 export const metadata = {
   title: "Contact Us",
 
   description:
-    "Contact Leadwell Pharmaceuticals in Hyderabad for product information, hospital supply requirements, distribution enquiries and pharmaceutical business partnerships.",
+    "Contact Leadwell Pharmaceuticals in Mailardevpally, Rajendra Nagar, Hyderabad for product information, hospital supply requirements, distribution enquiries and pharmaceutical business partnerships.",
 
   alternates: {
     canonical: "/contact",
@@ -29,7 +30,7 @@ export const metadata = {
     siteName: "Leadwell Pharmaceuticals",
     title: "Contact Leadwell Pharmaceuticals",
     description:
-      "Contact our Hyderabad team for pharmaceutical product information, hospital supplies and distribution enquiries.",
+      "Contact Leadwell Pharmaceuticals in Mailardevpally, Rajendra Nagar for pharmaceutical product information, hospital supplies and distribution enquiries.",
     images: [
       {
         url: "/pharma-3.png",
@@ -61,7 +62,9 @@ function serializeJsonLd(data) {
     .replace(/&/g, "\\u0026");
 }
 
-export default async function ContactPage({ searchParams }) {
+export default async function ContactPage({
+  searchParams,
+}) {
   const query = await searchParams;
 
   const requestedProduct =
@@ -77,18 +80,38 @@ export default async function ContactPage({ searchParams }) {
     name: "Contact Leadwell Pharmaceuticals",
     description:
       "Contact Leadwell Pharmaceuticals for pharmaceutical product, hospital supply and distribution enquiries.",
+
     isPartOf: {
       "@id": `${BASE_URL}/#website`,
     },
+
     about: {
       "@id": `${BASE_URL}/#organization`,
     },
+
     breadcrumb: {
       "@id": `${BASE_URL}/contact#breadcrumb`,
     },
+
     mainEntity: {
+      "@type": "Organization",
       "@id": `${BASE_URL}/#organization`,
+      name: "Leadwell Pharmaceuticals",
+      url: BASE_URL,
+      email: "Iwppharma8@gmail.com",
+      telephone: "+91-9346652741",
+
+      address: {
+        "@type": "PostalAddress",
+        streetAddress:
+          "H.No: 8-5-121/9, NKR Bhavan, Mailardevpally",
+        addressLocality: "Rajendra Nagar",
+        addressRegion: "Telangana",
+        postalCode: "500077",
+        addressCountry: "IN",
+      },
     },
+
     inLanguage: "en-IN",
   };
 
@@ -96,6 +119,7 @@ export default async function ContactPage({ searchParams }) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "@id": `${BASE_URL}/contact#breadcrumb`,
+
     itemListElement: [
       {
         "@type": "ListItem",
@@ -114,7 +138,11 @@ export default async function ContactPage({ searchParams }) {
 
   const structuredData = {
     "@context": "https://schema.org",
-    "@graph": [contactPageSchema, breadcrumbSchema],
+
+    "@graph": [
+      contactPageSchema,
+      breadcrumbSchema,
+    ],
   };
 
   return (
@@ -122,7 +150,9 @@ export default async function ContactPage({ searchParams }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: serializeJsonLd(structuredData),
+          __html: serializeJsonLd(
+            structuredData,
+          ),
         }}
       />
 
@@ -149,17 +179,21 @@ export default async function ContactPage({ searchParams }) {
             </div>
 
             <h1 className="mb-6 text-4xl font-extrabold leading-tight text-[#005a8d] md:text-5xl lg:text-6xl">
-              Pharmaceutical product and business enquiries
+              Pharmaceutical product and business
+              enquiries
             </h1>
 
             <p className="mx-auto max-w-3xl text-lg leading-relaxed text-slate-600">
-              Contact our Hyderabad team for product information,
-              hospital and institutional supply requirements,
-              distribution discussions or other pharmaceutical
+              Contact our Hyderabad team for product
+              information, hospital and institutional
+              supply requirements, distribution
+              discussions or other pharmaceutical
               business enquiries.
             </p>
           </div>
         </section>
+
+        {/* Breadcrumb */}
 
         <div className="mx-auto max-w-7xl px-[5%] pt-10">
           <nav
@@ -202,9 +236,11 @@ export default async function ContactPage({ searchParams }) {
               </h2>
 
               <p className="mb-10 max-w-xl leading-8 text-slate-600">
-                Our team is available to assist healthcare
-                professionals, hospitals, clinics and distribution
-                partners with product and supply-related enquiries.
+                Our team is available to assist
+                healthcare professionals, hospitals,
+                clinics and distribution partners
+                with product and supply-related
+                enquiries.
               </p>
 
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -220,22 +256,41 @@ export default async function ContactPage({ searchParams }) {
                   </a>
                 </ContactCard>
 
-                <ContactCard Icon={Mail} title="Official Email">
+                <ContactCard
+                  Icon={Mail}
+                  title="Official Email"
+                >
                   <a
-                    href="mailto:lwppharma@gmail.com"
+                    href="mailto:Iwppharma8@gmail.com"
                     className="break-all font-medium text-slate-600 transition hover:text-[#005a8d]"
                   >
-                    lwppharma@gmail.com
+                    Iwppharma8@gmail.com
                   </a>
                 </ContactCard>
 
-                <ContactCard Icon={MapPin} title="Location">
-                  <address className="not-italic leading-relaxed text-slate-600">
-                    Hyderabad, Telangana, India
+                <ContactCard
+                  Icon={MapPin}
+                  title="Office Address"
+                  className="sm:col-span-2"
+                >
+                  <address className="not-italic leading-7 text-slate-600">
+                    <span className="font-bold text-[#005a8d]">
+                      Leadwell Pharmaceuticals
+                    </span>
+                    <br />
+                    H.No: 8-5-121/9, NKR Bhavan,
+                    <br />
+                    Mailardevpally, Rajendra Nagar,
+                    <br />
+                    Rangareddy, Telangana – 500 077.
                   </address>
                 </ContactCard>
 
-                <ContactCard Icon={Clock} title="Business Hours">
+                <ContactCard
+                  Icon={Clock}
+                  title="Business Hours"
+                  className="sm:col-span-2"
+                >
                   <p className="leading-relaxed text-slate-600">
                     Monday – Saturday
                     <br />
@@ -250,17 +305,20 @@ export default async function ContactPage({ searchParams }) {
                 </h3>
 
                 <p className="text-sm leading-7 text-slate-600">
-                  Please include the product name, required quantity,
-                  organisation name and your preferred contact details
-                  wherever applicable. This helps our team respond more
-                  effectively.
+                  Please include the product name,
+                  required quantity, organisation name
+                  and your preferred contact details
+                  wherever applicable. This helps our
+                  team respond more effectively.
                 </p>
               </div>
             </div>
 
             {/* Interactive form */}
 
-            <ContactForm requestedProduct={requestedProduct} />
+            <ContactForm
+              requestedProduct={requestedProduct}
+            />
           </div>
         </section>
 
@@ -269,13 +327,15 @@ export default async function ContactPage({ searchParams }) {
         <section className="px-[5%] pb-16">
           <div className="mx-auto max-w-7xl rounded-[40px] bg-[#005a8d] px-8 py-14 text-center text-white md:px-14">
             <h2 className="mb-5 text-3xl font-extrabold md:text-4xl">
-              Looking for a specific pharmaceutical product?
+              Looking for a specific pharmaceutical
+              product?
             </h2>
 
             <p className="mx-auto mb-8 max-w-2xl leading-relaxed text-blue-100">
-              Browse our product portfolio to review available
-              categories, compositions and product information before
-              contacting our team.
+              Browse our product portfolio to review
+              available categories, compositions and
+              product information before contacting
+              our team.
             </p>
 
             <Link
@@ -291,9 +351,16 @@ export default async function ContactPage({ searchParams }) {
   );
 }
 
-function ContactCard({ Icon, title, children }) {
+function ContactCard({
+  Icon,
+  title,
+  children,
+  className = "",
+}) {
   return (
-    <article className="rounded-3xl border border-slate-100 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+    <article
+      className={`rounded-3xl border border-slate-100 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-lg ${className}`}
+    >
       <div className="mb-5 inline-flex rounded-2xl bg-[#2ecc71]/10 p-3">
         <Icon
           size={25}
@@ -302,7 +369,9 @@ function ContactCard({ Icon, title, children }) {
         />
       </div>
 
-      <h3 className="mb-2 font-bold text-[#005a8d]">{title}</h3>
+      <h3 className="mb-2 font-bold text-[#005a8d]">
+        {title}
+      </h3>
 
       <div className="text-sm">{children}</div>
     </article>

@@ -427,7 +427,8 @@ export default function RootLayout({ children }) {
               <address className="space-y-4 text-sm not-italic text-gray-300">
                 <p>
                   <span aria-hidden="true">📍</span>{" "}
-                  Hyderabad, Telangana, India
+                 NKR Bhavan,
+                  Mailardevpally, Rajendra Nagar, Rangareddy, Telangana - 500 077.
                 </p>
 
                 <p>

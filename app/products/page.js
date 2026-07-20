@@ -106,7 +106,7 @@ export default function ProductsPage() {
           position: index + 1,
 
           item: {
-            "@type": "Product",
+           "@type": "Thing",
             name: product.name,
             url: `${BASE_URL}/products/${product.slug}`,
             image: `${BASE_URL}${getProductImage(
