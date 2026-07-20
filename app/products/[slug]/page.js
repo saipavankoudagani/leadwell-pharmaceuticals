@@ -22,15 +22,11 @@ import {
 const BASE_URL =
   "https://leadwellpharmaceuticals.com";
 
+const COMPANY_NAME = "Leadwell Pharmaceuticals";
 const DEFAULT_IMAGE = "/logo.png";
 
 export const dynamicParams = false;
 
-/*
- * Convert a relative product image path
- * into a full absolute URL for metadata
- * and structured data.
- */
 function getAbsoluteImageUrl(imagePath) {
   if (!imagePath) {
     return `${BASE_URL}${DEFAULT_IMAGE}`;
@@ -50,10 +46,6 @@ function getAbsoluteImageUrl(imagePath) {
   }`;
 }
 
-/*
- * Get valid gallery images.
- * Falls back to the main image or logo.
- */
 function getProductImages(product) {
   const galleryImages = Array.isArray(
     product?.gallery,
@@ -77,34 +69,43 @@ function getProductImages(product) {
 }
 
 /*
- * Create a suitable SEO description
- * when seoDescription is not available.
+ * This produces titles such as:
+ * FRACMUST-PLUS | Leadwell Pharmaceuticals
  */
-function createMetaDescription(product) {
-  if (product.seoDescription) {
-    return product.seoDescription;
-  }
-
-  const text = [
-    `${product.name} by Leadwell Pharmaceuticals.`,
-    product.description,
-    product.composition
-      ? `Composition: ${product.composition}`
-      : "",
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  return text.length <= 160
-    ? text
-    : `${text.slice(0, 157).trimEnd()}...`;
+function createPageTitle(product) {
+  return `${product.name} | ${COMPANY_NAME}`;
 }
 
 /*
- * Safely serialize JSON-LD.
+ * Creates a description beginning with the exact
+ * brand name and company name.
  */
+function createMetaDescription(product) {
+  const productDescription =
+    product.description ||
+    product.seoDescription ||
+    product.tagline ||
+    product.composition ||
+    "";
+
+  const companyMention =
+    productDescription
+      .toLowerCase()
+      .includes("leadwell pharmaceuticals")
+      ? ""
+      : ` by ${COMPANY_NAME}`;
+
+  const text = `${product.name}${companyMention}. ${productDescription}`
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (text.length <= 160) {
+    return text;
+  }
+
+  return `${text.slice(0, 157).trimEnd()}...`;
+}
+
 function serializeJsonLd(data) {
   return JSON.stringify(data)
     .replace(/</g, "\\u003c")
@@ -112,27 +113,22 @@ function serializeJsonLd(data) {
     .replace(/&/g, "\\u0026");
 }
 
-/*
- * Pre-generate every product page.
- */
 export function generateStaticParams() {
   return products.map((product) => ({
     slug: product.slug,
   }));
 }
 
-/*
- * Dynamic SEO metadata for every product.
- */
-export async function generateMetadata({
-  params,
-}) {
+export async function generateMetadata({ params }) {
   const { slug } = await params;
   const product = getProductBySlug(slug);
 
   if (!product) {
     return {
-      title: "Product Not Found",
+      title: {
+        absolute:
+          "Product Not Found | Leadwell Pharmaceuticals",
+      },
 
       description:
         "The requested pharmaceutical product could not be found.",
@@ -146,15 +142,16 @@ export async function generateMetadata({
 
   const productUrl = `${BASE_URL}/products/${product.slug}`;
 
-  const productImages = getProductImages(
-    product,
-  ).map(getAbsoluteImageUrl);
+  const productImages = getProductImages(product).map(
+    getAbsoluteImageUrl,
+  );
 
-  const description =
-    createMetaDescription(product);
+  const description = createMetaDescription(product);
 
   return {
-    title: product.seoTitle || product.name,
+    title: {
+      absolute: `${product.name} | Leadwell Pharmaceuticals`,
+    },
 
     description,
 
@@ -167,38 +164,24 @@ export async function generateMetadata({
       locale: "en_IN",
       url: productUrl,
       siteName: "Leadwell Pharmaceuticals",
-
-      title: `${
-        product.seoTitle || product.name
-      } | Leadwell Pharmaceuticals`,
-
+      title: `${product.name} | Leadwell Pharmaceuticals`,
       description,
 
-      images: productImages.map(
-        (image, index) => ({
-          url: image,
-          width: 1200,
-          height: 1200,
-
-          alt:
-            index === 0
-              ? `${product.name} pharmaceutical product`
-              : `${product.name} product view ${
-                  index + 1
-                }`,
-        }),
-      ),
+      images: productImages.map((image, index) => ({
+        url: image,
+        width: 1200,
+        height: 1200,
+        alt:
+          index === 0
+            ? `${product.name} by Leadwell Pharmaceuticals`
+            : `${product.name} product image ${index + 1}`,
+      })),
     },
 
     twitter: {
       card: "summary_large_image",
-
-      title: `${
-        product.seoTitle || product.name
-      } | Leadwell Pharmaceuticals`,
-
+      title: `${product.name} | Leadwell Pharmaceuticals`,
       description,
-
       images: [productImages[0]],
     },
 
@@ -228,6 +211,9 @@ export default async function ProductPage({
   }
 
   const productUrl = `${BASE_URL}/products/${product.slug}`;
+  const pageTitle = createPageTitle(product);
+  const description =
+    createMetaDescription(product);
 
   const productGallery =
     getProductImages(product);
@@ -235,20 +221,14 @@ export default async function ProductPage({
   const absoluteProductImages =
     productGallery.map(getAbsoluteImageUrl);
 
-  const description =
-    createMetaDescription(product);
-
   const hasCompositionDetails =
     Array.isArray(product.compositionDetails) &&
     product.compositionDetails.length > 0;
 
-  /*
-   * Supports the newer packInfo property,
-   * while retaining compatibility with any
-   * older product using packaging.
-   */
   const packageInformation =
-    product.packInfo || product.packaging || "";
+    product.packInfo ||
+    product.packaging ||
+    "";
 
   const relatedProducts = products
     .filter(
@@ -258,31 +238,18 @@ export default async function ProductPage({
     )
     .slice(0, 3);
 
-  /*
-   * Medical informational structured data.
-   *
-   * Product schema has intentionally not been
-   * used because these pages are not ecommerce
-   * pages and do not contain offers, prices,
-   * reviews or aggregate ratings.
-   */
   const structuredData = {
     "@context": "https://schema.org",
 
     "@graph": [
       {
         "@type": "MedicalWebPage",
-
         "@id": `${productUrl}#webpage`,
-
         url: productUrl,
-
-        name: `${product.name} | Leadwell Pharmaceuticals`,
-
+        name: pageTitle,
+        headline: product.name,
         description,
-
         image: absoluteProductImages,
-
         inLanguage: "en-IN",
 
         breadcrumb: {
@@ -308,15 +275,11 @@ export default async function ProductPage({
 
       {
         "@type": "MedicalEntity",
-
         "@id": `${productUrl}#medical-entity`,
-
         name: product.name,
-
+        alternateName: product.name,
         url: productUrl,
-
         description,
-
         image: absoluteProductImages,
 
         mainEntityOfPage: {
@@ -330,7 +293,6 @@ export default async function ProductPage({
 
       {
         "@type": "BreadcrumbList",
-
         "@id": `${productUrl}#breadcrumb`,
 
         itemListElement: [
@@ -371,8 +333,6 @@ export default async function ProductPage({
 
       <main className="min-h-screen bg-slate-50 px-[5%] py-12">
         <div className="mx-auto max-w-7xl">
-          {/* Breadcrumb */}
-
           <nav
             aria-label="Breadcrumb"
             className="mb-8 flex flex-wrap items-center gap-2 text-sm"
@@ -411,8 +371,6 @@ export default async function ProductPage({
             </span>
           </nav>
 
-          {/* Back link */}
-
           <Link
             href="/products"
             className="mb-8 inline-flex items-center font-bold text-[#005a8d] transition hover:text-[#2ecc71]"
@@ -425,8 +383,6 @@ export default async function ProductPage({
 
             Back to All Products
           </Link>
-
-          {/* Main product information */}
 
           <section className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-5">
@@ -446,6 +402,10 @@ export default async function ProductPage({
               <h1 className="mb-4 mt-6 text-4xl font-extrabold text-[#005a8d] md:text-5xl">
                 {product.name}
               </h1>
+
+              <p className="mb-4 text-sm font-bold uppercase tracking-wider text-[#218c50]">
+                A Leadwell Pharmaceuticals Brand
+              </p>
 
               {product.tagline && (
                 <p className="mb-4 text-xl font-semibold leading-relaxed text-slate-700">
@@ -497,8 +457,6 @@ export default async function ProductPage({
             </article>
           </section>
 
-          {/* Product overview */}
-
           {product.overview && (
             <section className="mt-16 rounded-[40px] border border-slate-100 bg-white p-8 shadow-sm md:p-12">
               <SectionHeading
@@ -512,8 +470,6 @@ export default async function ProductPage({
               </p>
             </section>
           )}
-
-          {/* Composition table */}
 
           {hasCompositionDetails && (
             <section className="mt-16">
@@ -552,8 +508,6 @@ export default async function ProductPage({
             </section>
           )}
 
-          {/* Plain composition text */}
-
           {!hasCompositionDetails &&
             product.composition && (
               <section className="mt-16 rounded-[32px] border border-blue-50 bg-white p-8 shadow-sm">
@@ -568,8 +522,6 @@ export default async function ProductPage({
                 </p>
               </section>
             )}
-
-          {/* Key ingredients */}
 
           {Array.isArray(
             product.keyIngredients,
@@ -603,8 +555,6 @@ export default async function ProductPage({
               </section>
             )}
 
-          {/* Product highlights */}
-
           {Array.isArray(product.highlights) &&
             product.highlights.length > 0 && (
               <section className="mt-16 rounded-[40px] bg-[#005a8d] p-8 text-white md:p-12">
@@ -637,8 +587,6 @@ export default async function ProductPage({
                 </div>
               </section>
             )}
-
-          {/* Product information panels */}
 
           <section className="mt-16 grid gap-8 lg:grid-cols-2">
             {product.indications && (
@@ -674,16 +622,12 @@ export default async function ProductPage({
             )}
           </section>
 
-          {/* Disclaimer */}
-
           <section className="mt-12 rounded-3xl border border-amber-100 bg-amber-50 p-6">
             <p className="text-sm leading-7 text-amber-900">
               {product.disclaimer ||
                 "Product information is intended for healthcare professionals and general informational purposes only. Use prescription products only under the guidance of a registered medical practitioner."}
             </p>
           </section>
-
-          {/* Related products */}
 
           {relatedProducts.length > 0 && (
             <section className="mt-20">
@@ -716,9 +660,7 @@ export default async function ProductPage({
                 {relatedProducts.map(
                   (relatedProduct) => (
                     <article
-                      key={
-                        relatedProduct.slug
-                      }
+                      key={relatedProduct.slug}
                       className="rounded-3xl border border-slate-100 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
                     >
                       <p className="mb-3 text-xs font-black uppercase tracking-widest text-[#2ecc71]">
@@ -732,9 +674,7 @@ export default async function ProductPage({
                           href={`/products/${relatedProduct.slug}`}
                           className="transition hover:text-[#2ecc71]"
                         >
-                          {
-                            relatedProduct.name
-                          }
+                          {relatedProduct.name}
                         </Link>
                       </h3>
 

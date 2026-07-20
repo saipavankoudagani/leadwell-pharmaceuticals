@@ -37,14 +37,17 @@ const organizationSchema = {
     "Leadwell Pharmaceuticals is a Hyderabad-based pharmaceutical company offering healthcare, nutraceutical, orthopaedic and specialty pharmaceutical products across India.",
 
   telephone: "+91-9346652741",
-  email: "lwppharma@gmail.com",
+  email: "lwppharma8@gmail.com",
 
   address: {
-    "@type": "PostalAddress",
-    addressLocality: "Hyderabad",
-    addressRegion: "Telangana",
-    addressCountry: "IN",
-  },
+  "@type": "PostalAddress",
+  streetAddress:
+    "H.No: 8-5-121/9, NKR Bhavan, Mailardevpally",
+  addressLocality: "Rajendra Nagar",
+  addressRegion: "Telangana",
+  postalCode: "500077",
+  addressCountry: "IN",
+},
 
   areaServed: {
     "@type": "Country",
@@ -55,7 +58,7 @@ const organizationSchema = {
     {
       "@type": "ContactPoint",
       telephone: "+91-9346652741",
-      email: "lwppharma@gmail.com",
+      email: "lwppharma8@gmail.com",
       contactType: "customer support",
       areaServed: "IN",
       availableLanguage: ["English", "Telugu", "Hindi"],
@@ -425,11 +428,18 @@ export default function RootLayout({ children }) {
               </h2>
 
               <address className="space-y-4 text-sm not-italic text-gray-300">
-                <p>
-                  <span aria-hidden="true">📍</span>{" "}
-                 NKR Bhavan,
-                  Mailardevpally, Rajendra Nagar, Rangareddy, Telangana - 500 077.
-                </p>
+                <p className="leading-6">
+  <span aria-hidden="true">📍</span>{" "}
+  H.No: 8-5-121/9, NKR Bhavan,
+  <br />
+  <span className="ml-6">
+    Mailardevpally, Rajendra Nagar,
+  </span>
+  <br />
+  <span className="ml-6">
+    Rangareddy, Telangana – 500 077.
+  </span>
+</p>
 
                 <p>
                   <span aria-hidden="true">📞</span>{" "}
@@ -444,7 +454,7 @@ export default function RootLayout({ children }) {
                 <p>
                   <span aria-hidden="true">✉</span>{" "}
                   <a
-                    href="mailto:lwppharma@gmail.com"
+                    href="mailto:lwppharma8@gmail.com"
                     className="break-all transition hover:text-white"
                   >
                     lwppharma8@gmail.com
